@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { BadgeCheck, FolderLock, Search, X } from "lucide-react";
 import { toast } from "sonner";
@@ -14,14 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DEMO_INVESTORS,
-  DEMO_STARTUPS,
-  SECTORS,
-  STAGES,
-  formatMoney,
-  matchScore,
-} from "@/lib/demo-data";
+import { DEMO_INVESTORS, SECTORS, STAGES, formatMoney, matchScore } from "@/lib/demo-data";
+import { useVenture } from "@/lib/store";
 
 const TITLE = "Investor Dashboard — CampusVenture";
 const DESCRIPTION =
@@ -43,14 +37,17 @@ const ME = DEMO_INVESTORS[0]!;
 type SortKey = "match" | "readiness" | "updated" | "funding";
 
 function InvestorDashboard() {
+  const { startups, saved, toggleSaved, addRequest, requests, notify } = useVenture();
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("all");
   const [stage, setStage] = useState("all");
   const [sort, setSort] = useState<SortKey>("match");
-  const [saved, setSaved] = useState<string[]>([]);
+  const [savedOnly, setSavedOnly] = useState(false);
 
   const results = useMemo(() => {
-    const list = DEMO_STARTUPS.map((s) => ({ startup: s, ...matchScore(ME, s) }))
+    const list = startups
+      .filter((s) => s.status === "approved" || s.status === "pending")
+      .map((s) => ({ startup: s, ...matchScore(ME, s) }))
       .filter(({ startup }) => {
         const q = query.trim().toLowerCase();
         const matchesQuery =
@@ -60,6 +57,7 @@ function InvestorDashboard() {
           startup.university.toLowerCase().includes(q);
         return (
           matchesQuery &&
+          (!savedOnly || saved.includes(startup.id)) &&
           (sector === "all" || startup.sector === sector) &&
           (stage === "all" || startup.stage === stage)
         );
@@ -71,21 +69,20 @@ function InvestorDashboard() {
       if (sort === "updated") return b.startup.updatedAt.localeCompare(a.startup.updatedAt);
       return b.score - a.score;
     });
-  }, [query, sector, stage, sort]);
+  }, [startups, saved, savedOnly, query, sector, stage, sort]);
 
-  const hasFilters = query !== "" || sector !== "all" || stage !== "all";
+  const hasFilters = query !== "" || sector !== "all" || stage !== "all" || savedOnly;
 
   function clearAll() {
     setQuery("");
     setSector("all");
     setStage("all");
+    setSavedOnly(false);
   }
 
   function toggleSave(id: string, name: string) {
-    setSaved((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-    toast.success(saved.includes(id) ? `Removed ${name}` : `Saved ${name} to your watchlist`);
+    const added = toggleSaved(id);
+    toast.success(added ? `Saved ${name} to your watchlist` : `Removed ${name}`);
   }
 
   return (
@@ -102,9 +99,16 @@ function InvestorDashboard() {
         <div className="grid gap-4 sm:grid-cols-4">
           <MiniStat label="Matches" value={String(results.length)} />
           <MiniStat label="Saved" value={String(saved.length)} />
-          <MiniStat label="Connection requests" value="2" />
-          <MiniStat label="Data-room access" value="1" />
+          <MiniStat
+            label="Connection requests"
+            value={String(requests.filter((r) => r.kind === "connection").length)}
+          />
+          <MiniStat
+            label="Data-room requests"
+            value={String(requests.filter((r) => r.kind === "dataroom").length)}
+          />
         </div>
+
 
         <Card>
           <CardHeader>
@@ -165,6 +169,13 @@ function InvestorDashboard() {
                   <SelectItem value="funding">Funding requirement</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                variant={savedOnly ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setSavedOnly((v) => !v)}
+              >
+                Saved only
+              </Button>
               {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={clearAll}>
                   <X className="size-3.5" aria-hidden="true" />

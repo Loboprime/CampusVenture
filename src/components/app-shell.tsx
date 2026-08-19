@@ -1,10 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  Bell,
   Building2,
   CalendarClock,
+  ClipboardCheck,
   FolderLock,
   GraduationCap,
   LayoutDashboard,
@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notification-bell";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/demo-data";
@@ -24,22 +25,21 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   to: string;
-  active?: boolean;
 }
 
 const NAV: Record<Role, NavItem[]> = {
   student: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/student", active: true },
-    { label: "My Startup", icon: Rocket, to: "/app/student" },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/student" },
+    { label: "My Startup", icon: Rocket, to: "/app/student/startup" },
     { label: "AI Readiness", icon: Sparkles, to: "/app/student" },
     { label: "Discover Investors", icon: Search, to: "/app/student" },
-    { label: "Data Room", icon: FolderLock, to: "/app/student" },
+    { label: "Data Room", icon: FolderLock, to: "/app/student/startup" },
     { label: "Messages", icon: MessagesSquare, to: "/app/student" },
     { label: "Meetings", icon: CalendarClock, to: "/app/student" },
     { label: "Settings", icon: Settings, to: "/app/student" },
   ],
   investor: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/investor", active: true },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/investor" },
     { label: "Discover Startups", icon: Search, to: "/app/investor" },
     { label: "Saved Startups", icon: Rocket, to: "/app/investor" },
     { label: "Data Rooms", icon: FolderLock, to: "/app/investor" },
@@ -48,7 +48,8 @@ const NAV: Record<Role, NavItem[]> = {
     { label: "Settings", icon: Settings, to: "/app/investor" },
   ],
   university: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/university", active: true },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/university" },
+    { label: "Review queue", icon: ClipboardCheck, to: "/app/university/review" },
     { label: "Students", icon: Users, to: "/app/university" },
     { label: "Startups", icon: Rocket, to: "/app/university" },
     { label: "Programs", icon: GraduationCap, to: "/app/university" },
@@ -63,8 +64,10 @@ const ROLE_LABEL: Record<Role, string> = {
   university: "Demo University",
 };
 
+
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
   const items = NAV[role];
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,7 +85,7 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
               to={item.to}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                item.active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
+                pathname === item.to && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
               )}
             >
               <item.icon className="size-4" aria-hidden="true" />
@@ -105,16 +108,11 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
           </div>
           <div className="flex items-center gap-1">
             <RoleSwitch current={role} />
-            <button
-              type="button"
-              className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-              aria-label="Notifications"
-            >
-              <Bell className="size-4" />
-            </button>
+            <NotificationBell role={role} />
             <ThemeToggle />
           </div>
         </header>
+
         <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
         <nav
           className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur lg:hidden"
