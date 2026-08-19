@@ -169,6 +169,13 @@ function InvestorDashboard() {
                   <SelectItem value="funding">Funding requirement</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                variant={savedOnly ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setSavedOnly((v) => !v)}
+              >
+                Saved only
+              </Button>
               {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={clearAll}>
                   <X className="size-3.5" aria-hidden="true" />
