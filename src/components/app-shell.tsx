@@ -67,6 +67,7 @@ const ROLE_LABEL: Record<Role, string> = {
 
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
   const items = NAV[role];
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <div className="min-h-screen bg-background">
@@ -84,7 +85,7 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
               to={item.to}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                item.active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
+                pathname === item.to && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
               )}
             >
               <item.icon className="size-4" aria-hidden="true" />
@@ -107,16 +108,11 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
           </div>
           <div className="flex items-center gap-1">
             <RoleSwitch current={role} />
-            <button
-              type="button"
-              className="grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-              aria-label="Notifications"
-            >
-              <Bell className="size-4" />
-            </button>
+            <NotificationBell role={role} />
             <ThemeToggle />
           </div>
         </header>
+
         <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
         <nav
           className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur lg:hidden"
