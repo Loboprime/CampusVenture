@@ -1,10 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  Bell,
   Building2,
   CalendarClock,
+  ClipboardCheck,
   FolderLock,
   GraduationCap,
   LayoutDashboard,
@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notification-bell";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/demo-data";
@@ -24,22 +25,21 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   to: string;
-  active?: boolean;
 }
 
 const NAV: Record<Role, NavItem[]> = {
   student: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/student", active: true },
-    { label: "My Startup", icon: Rocket, to: "/app/student" },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/student" },
+    { label: "My Startup", icon: Rocket, to: "/app/student/startup" },
     { label: "AI Readiness", icon: Sparkles, to: "/app/student" },
     { label: "Discover Investors", icon: Search, to: "/app/student" },
-    { label: "Data Room", icon: FolderLock, to: "/app/student" },
+    { label: "Data Room", icon: FolderLock, to: "/app/student/startup" },
     { label: "Messages", icon: MessagesSquare, to: "/app/student" },
     { label: "Meetings", icon: CalendarClock, to: "/app/student" },
     { label: "Settings", icon: Settings, to: "/app/student" },
   ],
   investor: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/investor", active: true },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/investor" },
     { label: "Discover Startups", icon: Search, to: "/app/investor" },
     { label: "Saved Startups", icon: Rocket, to: "/app/investor" },
     { label: "Data Rooms", icon: FolderLock, to: "/app/investor" },
@@ -48,7 +48,8 @@ const NAV: Record<Role, NavItem[]> = {
     { label: "Settings", icon: Settings, to: "/app/investor" },
   ],
   university: [
-    { label: "Dashboard", icon: LayoutDashboard, to: "/app/university", active: true },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/app/university" },
+    { label: "Review queue", icon: ClipboardCheck, to: "/app/university/review" },
     { label: "Students", icon: Users, to: "/app/university" },
     { label: "Startups", icon: Rocket, to: "/app/university" },
     { label: "Programs", icon: GraduationCap, to: "/app/university" },
@@ -62,6 +63,7 @@ const ROLE_LABEL: Record<Role, string> = {
   investor: "Demo Investor",
   university: "Demo University",
 };
+
 
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
   const items = NAV[role];
