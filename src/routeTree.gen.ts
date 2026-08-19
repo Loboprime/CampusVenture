@@ -14,6 +14,7 @@ import { Route as AppInvestorRouteImport } from './routes/app.investor'
 import { Route as AppStudentRouteImport } from './routes/app.student'
 import { Route as AppUniversityRouteImport } from './routes/app.university'
 import { Route as AppStudentStartupRouteImport } from './routes/app.student.startup'
+import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,28 +41,36 @@ const AppStudentStartupRoute = AppStudentStartupRouteImport.update({
   path: '/startup',
   getParentRoute: () => AppStudentRoute,
 } as any)
+const AppInvestorStartupIdRoute = AppInvestorStartupIdRouteImport.update({
+  id: '/startup/$id',
+  path: '/startup/$id',
+  getParentRoute: () => AppInvestorRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app/investor': typeof AppInvestorRoute
+  '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app/investor': typeof AppInvestorRoute
+  '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app/investor': typeof AppInvestorRoute
+  '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,6 +80,7 @@ export interface FileRouteTypes {
     | '/app/student'
     | '/app/university'
     | '/app/student/startup'
+    | '/app/investor/startup/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -78,6 +88,7 @@ export interface FileRouteTypes {
     | '/app/student'
     | '/app/university'
     | '/app/student/startup'
+    | '/app/investor/startup/$id'
   id:
     | '__root__'
     | '/'
@@ -85,11 +96,12 @@ export interface FileRouteTypes {
     | '/app/student'
     | '/app/university'
     | '/app/student/startup'
+    | '/app/investor/startup/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppInvestorRoute: typeof AppInvestorRoute
+  AppInvestorRoute: typeof AppInvestorRouteWithChildren
   AppStudentRoute: typeof AppStudentRouteWithChildren
   AppUniversityRoute: typeof AppUniversityRoute
 }
@@ -131,8 +143,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentStartupRouteImport
       parentRoute: typeof AppStudentRoute
     }
+    '/app/investor/startup/$id': {
+      id: '/app/investor/startup/$id'
+      path: '/startup/$id'
+      fullPath: '/app/investor/startup/$id'
+      preLoaderRoute: typeof AppInvestorStartupIdRouteImport
+      parentRoute: typeof AppInvestorRoute
+    }
   }
 }
+
+interface AppInvestorRouteChildren {
+  AppInvestorStartupIdRoute: typeof AppInvestorStartupIdRoute
+}
+
+const AppInvestorRouteChildren: AppInvestorRouteChildren = {
+  AppInvestorStartupIdRoute: AppInvestorStartupIdRoute,
+}
+
+const AppInvestorRouteWithChildren = AppInvestorRoute._addFileChildren(
+  AppInvestorRouteChildren,
+)
 
 interface AppStudentRouteChildren {
   AppStudentStartupRoute: typeof AppStudentStartupRoute
@@ -148,7 +179,7 @@ const AppStudentRouteWithChildren = AppStudentRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppInvestorRoute: AppInvestorRoute,
+  AppInvestorRoute: AppInvestorRouteWithChildren,
   AppStudentRoute: AppStudentRouteWithChildren,
   AppUniversityRoute: AppUniversityRoute,
 }
