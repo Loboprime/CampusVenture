@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { BadgeCheck, FolderLock, Search, X } from "lucide-react";
 import { toast } from "sonner";
@@ -14,14 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DEMO_INVESTORS,
-  DEMO_STARTUPS,
-  SECTORS,
-  STAGES,
-  formatMoney,
-  matchScore,
-} from "@/lib/demo-data";
+import { DEMO_INVESTORS, SECTORS, STAGES, formatMoney, matchScore } from "@/lib/demo-data";
+import { useVenture } from "@/lib/store";
 
 const TITLE = "Investor Dashboard — CampusVenture";
 const DESCRIPTION =
