@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppInvestorRouteImport } from './routes/app.investor'
+import { Route as AppStudentRouteImport } from './routes/app.student'
+import { Route as AppUniversityRouteImport } from './routes/app.university'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppInvestorRoute = AppInvestorRouteImport.update({
+  id: '/app/investor',
+  path: '/app/investor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppStudentRoute = AppStudentRouteImport.update({
+  id: '/app/student',
+  path: '/app/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppUniversityRoute = AppUniversityRouteImport.update({
+  id: '/app/university',
+  path: '/app/university',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app/investor': typeof AppInvestorRoute
+  '/app/student': typeof AppStudentRoute
+  '/app/university': typeof AppUniversityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app/investor': typeof AppInvestorRoute
+  '/app/student': typeof AppStudentRoute
+  '/app/university': typeof AppUniversityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app/investor': typeof AppInvestorRoute
+  '/app/student': typeof AppStudentRoute
+  '/app/university': typeof AppUniversityRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/app/investor' | '/app/student' | '/app/university'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/app/investor' | '/app/student' | '/app/university'
+  id: '__root__' | '/' | '/app/investor' | '/app/student' | '/app/university'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppInvestorRoute: typeof AppInvestorRoute
+  AppStudentRoute: typeof AppStudentRoute
+  AppUniversityRoute: typeof AppUniversityRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/investor': {
+      id: '/app/investor'
+      path: '/app/investor'
+      fullPath: '/app/investor'
+      preLoaderRoute: typeof AppInvestorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/student': {
+      id: '/app/student'
+      path: '/app/student'
+      fullPath: '/app/student'
+      preLoaderRoute: typeof AppStudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/university': {
+      id: '/app/university'
+      path: '/app/university'
+      fullPath: '/app/university'
+      preLoaderRoute: typeof AppUniversityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppInvestorRoute: AppInvestorRoute,
+  AppStudentRoute: AppStudentRoute,
+  AppUniversityRoute: AppUniversityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
