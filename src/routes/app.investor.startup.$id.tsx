@@ -113,7 +113,7 @@ function StartupDetail() {
               <CardTitle className="text-base">Match rationale</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
-              <ScoreRing value={score} />
+              <ScoreRing value={score} label="Match" size={120} />
               <ul className="w-full space-y-1 text-xs text-muted-foreground">
                 {reasons.map((r) => (
                   <li key={r}>· {r}</li>

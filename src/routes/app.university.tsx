@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Bar,
   BarChart,
@@ -15,7 +15,8 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DEMO_STARTUPS, STAGES, formatMoney } from "@/lib/demo-data";
+import { STAGES, formatMoney } from "@/lib/demo-data";
+import { STATUS_LABEL, useVenture } from "@/lib/store";
 
 const TITLE = "University Ecosystem Dashboard — CampusVenture";
 const DESCRIPTION =
@@ -42,6 +43,8 @@ const CHART_COLORS = [
 ];
 
 function UniversityDashboard() {
+  const { startups: DEMO_STARTUPS } = useVenture();
+  const pending = DEMO_STARTUPS.filter((s) => s.status === "pending");
   const byStage = STAGES.map((stage) => ({
     stage,
     count: DEMO_STARTUPS.filter((s) => s.stage === stage).length,
@@ -72,7 +75,7 @@ function UniversityDashboard() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Student founders" value="142" />
-          <Stat label="Verified founders" value="118" />
+          <Stat label="Verified startups" value={String(DEMO_STARTUPS.filter((s) => s.status === "approved").length)} />
           <Stat label="Active startups" value={String(DEMO_STARTUPS.length)} />
           <Stat label="Avg. readiness" value={`${avgReadiness}/100`} />
         </div>
@@ -153,6 +156,38 @@ function UniversityDashboard() {
                 </div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Awaiting verification</CardTitle>
+            <CardDescription>
+              {pending.length === 0
+                ? "Nothing in the queue right now."
+                : `${pending.length} startup${pending.length > 1 ? "s" : ""} submitted for review.`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {pending.map((s) => (
+              <div
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4"
+              >
+                <div>
+                  <p className="font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {s.sector} · {s.stage} · {STATUS_LABEL[s.status]}
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/app/university/review">Review</Link>
+                </Button>
+              </div>
+            ))}
+            <Button size="sm" asChild>
+              <Link to="/app/university/review">Open review queue</Link>
+            </Button>
           </CardContent>
         </Card>
 
