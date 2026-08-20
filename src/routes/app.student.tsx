@@ -65,23 +65,47 @@ function assessment(s: StartupRecord, scores: Record<string, number>) {
 
 
 function StudentDashboard() {
+  const { startups, saved, requests, updateStartup, notify } = useVenture();
+  const STARTUP = startups[0]!;
   const [analyzing, setAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(true);
+
+  const scores = categoryScores(STARTUP);
+  const weighted = Math.round(
+    READINESS_WEIGHTS.reduce((sum, { key, weight }) => sum + (scores[key] ?? 0) * (weight / 100), 0),
+  );
+  const review = assessment(STARTUP, scores);
+  const pct = completeness(STARTUP);
 
   const matches = DEMO_INVESTORS.map((investor) => ({
     investor,
     ...matchScore(investor, STARTUP),
   })).sort((a, b) => b.score - a.score);
 
+  const todo = [
+    !STARTUP.problem && "Write your problem statement",
+    !STARTUP.solution && "Describe your solution",
+    !STARTUP.videoUrl && "Upload a 2–3 minute pitch video",
+    !STARTUP.deckName && "Upload your pitch deck",
+    !STARTUP.githubUrl && "Connect your GitHub project",
+  ].filter(Boolean) as string[];
+
   function runAnalysis() {
     setAnalyzing(true);
     setShowResult(false);
-    toast.info("AI analysis is not connected yet in this build.", {
-      description: "Showing the last saved assessment for this startup instead.",
-    });
     window.setTimeout(() => {
+      const previous = STARTUP.readiness;
+      updateStartup(STARTUP.id, { readiness: weighted });
       setAnalyzing(false);
       setShowResult(true);
+      const delta = weighted - previous;
+      toast.success(`Readiness re-scored: ${weighted}/100`, {
+        description:
+          delta === 0
+            ? "No change since your last assessment."
+            : `${delta > 0 ? "+" : ""}${delta} points versus your previous score.`,
+      });
+      notify("student", "AI assessment updated", `${STARTUP.name} now scores ${weighted}/100.`);
     }, 900);
   }
 
@@ -92,20 +116,32 @@ function StudentDashboard() {
           <div>
             <h1 className="text-2xl font-semibold">Welcome back, Aayush</h1>
             <p className="text-sm text-muted-foreground">
-              {STARTUP.name} · {STARTUP.stage} · {STARTUP.university}
+              {STARTUP.name} · {STARTUP.stage} · {STARTUP.university} ·{" "}
+              {STATUS_LABEL[STARTUP.status]}
             </p>
           </div>
-          <Button onClick={runAnalysis} disabled={analyzing}>
-            <Sparkles className="size-4" aria-hidden="true" />
-            {analyzing ? "Analyzing…" : "Analyze Startup with AI"}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/app/student/startup">Edit my startup</Link>
+            </Button>
+            <Button onClick={runAnalysis} disabled={analyzing}>
+              <Sparkles className="size-4" aria-hidden="true" />
+              {analyzing ? "Analyzing…" : "Analyze Startup with AI"}
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
           <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-base">Investment readiness</CardTitle>
-              <CardDescription>Strong potential</CardDescription>
+              <CardDescription>
+                {STARTUP.readiness >= 75
+                  ? "Strong potential"
+                  : STARTUP.readiness >= 55
+                    ? "Promising, needs polish"
+                    : "Early — keep building"}
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
               {analyzing ? (
@@ -130,10 +166,10 @@ function StudentDashboard() {
                   <div className="flex items-center justify-between text-xs">
                     <span>{key}</span>
                     <span className="text-muted-foreground">
-                      {CATEGORY_SCORES[key]} · {weight}%
+                      {scores[key]} · {weight}%
                     </span>
                   </div>
-                  <Progress value={CATEGORY_SCORES[key]} />
+                  <Progress value={scores[key]} />
                 </div>
               ))}
             </CardContent>
@@ -147,15 +183,20 @@ function StudentDashboard() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold">78%</span>
+                <span className="text-3xl font-semibold tabular-nums">{pct}%</span>
                 <span className="text-xs text-muted-foreground">complete</span>
               </div>
-              <Progress value={78} />
+              <Progress value={pct} />
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>· Add GitHub link</li>
-                <li>· Upload a 2–3 minute pitch video</li>
-                <li>· Add achievements</li>
+                {todo.length === 0 ? (
+                  <li>· Everything essential is filled in.</li>
+                ) : (
+                  todo.map((t) => <li key={t}>· {t}</li>)
+                )}
               </ul>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/app/student/startup">Complete profile</Link>
+              </Button>
             </CardContent>
           </Card>
 
@@ -164,10 +205,22 @@ function StudentDashboard() {
               <CardTitle className="text-base">Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <Stat label="Investor profile views" value="126" />
-              <Stat label="Saved by investors" value="9" />
-              <Stat label="Connection requests" value="3" />
-              <Stat label="Data-room requests" value="1" />
+              <Stat label="Investor profile views" value={String(STARTUP.views)} />
+              <Stat label="Saved by investors" value={String(saved.length)} />
+              <Stat
+                label="Connection requests"
+                value={String(
+                  requests.filter((r) => r.startupId === STARTUP.id && r.kind === "connection")
+                    .length,
+                )}
+              />
+              <Stat
+                label="Data-room requests"
+                value={String(
+                  requests.filter((r) => r.startupId === STARTUP.id && r.kind === "dataroom").length,
+                )}
+              />
+
             </CardContent>
           </Card>
 
