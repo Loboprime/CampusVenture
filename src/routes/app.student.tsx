@@ -243,27 +243,18 @@ function StudentDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Latest AI assessment</CardTitle>
-              <CardDescription>Saved 12 Aug 2026 · Previous score 71 (+7)</CardDescription>
+              <CardDescription>
+                Live scoring from your current profile · weighted score {weighted}/100
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 md:grid-cols-3">
-              <Section title="Strengths" items={[
-                "Clear, specific problem definition",
-                "Working MVP with campus pilots",
-                "Well-defined target users",
-              ]} />
-              <Section title="Weaknesses" items={[
-                "Limited third-party traction evidence",
-                "Business model needs pricing clarity",
-                "Thin competitive analysis",
-              ]} />
-              <Section title="Recommendations" items={[
-                "Add measurable retention metrics",
-                "Document customer acquisition strategy",
-                "Quantify the addressable market",
-              ]} />
+              <Section title="Strengths" items={review.strengths} />
+              <Section title="Weaknesses" items={review.weaknesses} />
+              <Section title="Recommendations" items={review.recommendations} />
             </CardContent>
           </Card>
         )}
+
 
         <Card>
           <CardHeader>
