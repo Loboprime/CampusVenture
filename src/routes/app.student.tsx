@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight, Sparkles, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
@@ -9,13 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DEMO_INVESTORS,
-  DEMO_STARTUPS,
-  READINESS_WEIGHTS,
-  formatMoney,
-  matchScore,
-} from "@/lib/demo-data";
+import { DEMO_INVESTORS, READINESS_WEIGHTS, formatMoney, matchScore } from "@/lib/demo-data";
+import { STATUS_LABEL, completeness, useVenture, type StartupRecord } from "@/lib/store";
 
 const TITLE = "Founder Dashboard — CampusVenture";
 const DESCRIPTION =
