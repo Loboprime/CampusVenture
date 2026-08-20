@@ -161,6 +161,38 @@ function UniversityDashboard() {
 
         <Card>
           <CardHeader>
+            <CardTitle className="text-base">Awaiting verification</CardTitle>
+            <CardDescription>
+              {pending.length === 0
+                ? "Nothing in the queue right now."
+                : `${pending.length} startup${pending.length > 1 ? "s" : ""} submitted for review.`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {pending.map((s) => (
+              <div
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4"
+              >
+                <div>
+                  <p className="font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {s.sector} · {s.stage} · {STATUS_LABEL[s.status]}
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/app/university/review">Review</Link>
+                </Button>
+              </div>
+            ))}
+            <Button size="sm" asChild>
+              <Link to="/app/university/review">Open review queue</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle className="text-base">Programs &amp; events</CardTitle>
           </CardHeader>
           <CardContent>
