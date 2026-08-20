@@ -239,6 +239,11 @@ function InvestorDashboard() {
                     </ul>
                   </details>
                   <div className="mt-auto flex flex-wrap gap-2 pt-2">
+                    <Button size="sm" asChild>
+                      <Link to="/app/investor/startup/$id" params={{ id: startup.id }}>
+                        View profile
+                      </Link>
+                    </Button>
                     <Button
                       size="sm"
                       variant={saved.includes(startup.id) ? "secondary" : "outline"}
@@ -249,17 +254,24 @@ function InvestorDashboard() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => toast.success(`Connection requested with ${startup.name}`)}
+                      onClick={() => {
+                        addRequest(startup.id, ME.id, "connection");
+                        notify("student", "New connection request", `${ME.name} wants to connect.`);
+                        toast.success(`Connection requested with ${startup.name}`);
+                      }}
                     >
                       Request connection
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() =>
+                      variant="outline"
+                      onClick={() => {
+                        addRequest(startup.id, ME.id, "dataroom");
+                        notify("student", "Data-room request", `${ME.organization} requested access.`);
                         toast.info(`Data-room request sent to ${startup.name}`, {
                           description: "The founder must approve, then both parties accept the NDA.",
-                        })
-                      }
+                        });
+                      }}
                     >
                       <FolderLock className="size-3.5" aria-hidden="true" />
                       Request data room
