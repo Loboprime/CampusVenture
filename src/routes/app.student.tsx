@@ -287,7 +287,14 @@ function StudentDashboard() {
                   variant="outline"
                   size="sm"
                   className="mt-4"
-                  onClick={() => toast.success(`Connection request drafted for ${investor.name}`)}
+                  onClick={() => {
+                    notify(
+                      "investor",
+                      "New founder outreach",
+                      `${STARTUP.name} requested a connection.`,
+                    );
+                    toast.success(`Connection request sent to ${investor.name}`);
+                  }}
                 >
                   Request connection
                   <ArrowUpRight className="size-3.5" aria-hidden="true" />
