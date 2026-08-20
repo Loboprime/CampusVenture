@@ -28,19 +28,41 @@ export const Route = createFileRoute("/app/student")({
   component: StudentDashboard,
 });
 
-const STARTUP = DEMO_STARTUPS[0]!;
+/** Derive per-category scores from what the founder has actually filled in. */
+function categoryScores(s: StartupRecord): Record<string, number> {
+  const words = (t: string) => t.trim().split(/\s+/).filter(Boolean).length;
+  const clamp = (n: number) => Math.max(20, Math.min(98, Math.round(n)));
+  return {
+    "Problem clarity": clamp(30 + words(s.problem) * 2.2),
+    "Solution strength": clamp(30 + words(s.solution) * 2.2),
+    "Market opportunity": clamp(45 + s.monthlyUsers / 200),
+    "Business model": clamp(35 + words(s.businessModel) * 9),
+    "Product readiness": clamp((s.githubUrl ? 55 : 30) + (s.videoUrl ? 20 : 0) + s.githubStars / 30),
+    Traction: clamp((s.revenue ? 55 : 35) + words(s.traction) * 3),
+    "Competitive advantage": clamp(40 + words(s.solution)),
+    "Team readiness": clamp(45 + s.teamSize * 8),
+    "Funding clarity": clamp((s.fundingRequired > 0 ? 55 : 25) + (s.deckName ? 25 : 0)),
+  };
+}
 
-const CATEGORY_SCORES: Record<string, number> = {
-  "Problem clarity": 88,
-  "Solution strength": 82,
-  "Market opportunity": 74,
-  "Business model": 68,
-  "Product readiness": 85,
-  Traction: 66,
-  "Competitive advantage": 62,
-  "Team readiness": 80,
-  "Funding clarity": 70,
-};
+function assessment(s: StartupRecord, scores: Record<string, number>) {
+  const entries = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const strengths = entries.slice(0, 3).map(([k, v]) => `${k} is solid (${v}/100)`);
+  const weaknesses = entries
+    .slice(-3)
+    .reverse()
+    .map(([k, v]) => `${k} needs work (${v}/100)`);
+  const recs: string[] = [];
+  if (!s.videoUrl) recs.push("Record a 2–3 minute video pitch");
+  if (!s.deckName) recs.push("Upload your pitch deck to the data room");
+  if (!s.githubUrl) recs.push("Connect your GitHub repository");
+  if (s.problem.trim().split(/\s+/).filter(Boolean).length < 40)
+    recs.push("Expand the problem statement with cost and frequency data");
+  if (!s.revenue) recs.push("Show a path to first revenue with pricing");
+  recs.push("Quantify the addressable market");
+  return { strengths, weaknesses, recommendations: recs.slice(0, 4) };
+}
+
 
 function StudentDashboard() {
   const [analyzing, setAnalyzing] = useState(false);
