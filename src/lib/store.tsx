@@ -11,6 +11,10 @@ import { DEMO_STARTUPS, type Role, type Startup } from "@/lib/demo-data";
 
 export type ReviewStatus = "draft" | "pending" | "approved" | "rejected";
 
+/** The signed-in identities this build uses (auth is disabled). */
+export const MY_STARTUP_ID = "s1";
+export const MY_INVESTOR_ID = "i1";
+
 export interface StartupRecord extends Startup {
   problem: string;
   solution: string;
@@ -41,14 +45,84 @@ export interface ConnectionRequest {
   at: string;
 }
 
+export interface Message {
+  id: string;
+  startupId: string;
+  investorId: string;
+  from: "student" | "investor";
+  text: string;
+  at: string;
+  readByStudent: boolean;
+  readByInvestor: boolean;
+}
+
+export interface Meeting {
+  id: string;
+  startupId: string;
+  investorId: string;
+  title: string;
+  at: string;
+  minutes: number;
+  status: "requested" | "confirmed" | "declined";
+  requestedBy: "student" | "investor";
+}
+
+export interface DataRoomDoc {
+  id: string;
+  startupId: string;
+  name: string;
+  category: "Financials" | "Legal" | "Product" | "Metrics" | "Cap table";
+  size: string;
+  confidential: boolean;
+  addedAt: string;
+}
+
+export interface DataRoomAccess {
+  id: string;
+  startupId: string;
+  investorId: string;
+  status: "pending" | "granted" | "revoked";
+  ndaSigned: boolean;
+  ndaSignedName: string;
+  requestedAt: string;
+  downloads: number;
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  cohort: string;
+  seats: number;
+  enrolled: string[];
+  mentor: string;
+  status: "open" | "running" | "closed";
+  startsOn: string;
+}
+
+export interface StudentRecord {
+  id: string;
+  name: string;
+  email: string;
+  branch: string;
+  year: string;
+  startupId: string | null;
+  verified: boolean;
+}
+
 interface State {
   startups: StartupRecord[];
   notifications: Notification[];
   saved: string[];
   requests: ConnectionRequest[];
+  messages: Message[];
+  meetings: Meeting[];
+  docs: DataRoomDoc[];
+  access: DataRoomAccess[];
+  programs: Program[];
+  students: StudentRecord[];
 }
 
-const STORAGE_KEY = "campusventure.state.v1";
+const STORAGE_KEY = "campusventure.state.v2";
 
 const SEED_EXTRAS: Record<string, Partial<StartupRecord>> = {
   s1: {
@@ -87,11 +161,241 @@ function seed(): State {
 
   const now = Date.now();
   const at = (min: number) => new Date(now - min * 60000).toISOString();
+  const soon = (hours: number) => new Date(now + hours * 3600000).toISOString();
 
   return {
     startups,
-    saved: [],
-    requests: [],
+    saved: ["s4"],
+    requests: [
+      {
+        id: "r-seed-1",
+        startupId: MY_STARTUP_ID,
+        investorId: "i1",
+        kind: "connection",
+        status: "accepted",
+        at: at(2600),
+      },
+      {
+        id: "r-seed-2",
+        startupId: "s4",
+        investorId: "i2",
+        kind: "dataroom",
+        status: "pending",
+        at: at(180),
+      },
+    ],
+    messages: [
+      {
+        id: "m1",
+        startupId: MY_STARTUP_ID,
+        investorId: "i1",
+        from: "investor",
+        text: "Loved the demo. What does retention look like after the first semester?",
+        at: at(220),
+        readByStudent: false,
+        readByInvestor: true,
+      },
+      {
+        id: "m2",
+        startupId: MY_STARTUP_ID,
+        investorId: "i1",
+        from: "student",
+        text: "Semester-2 retention is 71% across the three campus pilots. Happy to share the cohort chart.",
+        at: at(180),
+        readByStudent: true,
+        readByInvestor: false,
+      },
+      {
+        id: "m3",
+        startupId: MY_STARTUP_ID,
+        investorId: "i4",
+        from: "investor",
+        text: "We write first cheques for verified student teams — are you raising now?",
+        at: at(60),
+        readByStudent: false,
+        readByInvestor: true,
+      },
+      {
+        id: "m4",
+        startupId: "s4",
+        investorId: "i1",
+        from: "investor",
+        text: "Can you share the regulatory timeline for the wearable?",
+        at: at(500),
+        readByStudent: false,
+        readByInvestor: true,
+      },
+    ],
+    meetings: [
+      {
+        id: "mt1",
+        startupId: MY_STARTUP_ID,
+        investorId: "i1",
+        title: "Product deep dive",
+        at: soon(26),
+        minutes: 30,
+        status: "confirmed",
+        requestedBy: "investor",
+      },
+      {
+        id: "mt2",
+        startupId: MY_STARTUP_ID,
+        investorId: "i4",
+        title: "Intro call",
+        at: soon(72),
+        minutes: 20,
+        status: "requested",
+        requestedBy: "investor",
+      },
+    ],
+    docs: [
+      {
+        id: "d1",
+        startupId: MY_STARTUP_ID,
+        name: "Financial model FY26.xlsx",
+        category: "Financials",
+        size: "412 KB",
+        confidential: true,
+        addedAt: at(4000),
+      },
+      {
+        id: "d2",
+        startupId: MY_STARTUP_ID,
+        name: "Cap table (post-angel).pdf",
+        category: "Cap table",
+        size: "88 KB",
+        confidential: true,
+        addedAt: at(3800),
+      },
+      {
+        id: "d3",
+        startupId: MY_STARTUP_ID,
+        name: "Product roadmap 2026.pdf",
+        category: "Product",
+        size: "1.2 MB",
+        confidential: false,
+        addedAt: at(2200),
+      },
+      {
+        id: "d4",
+        startupId: "s4",
+        name: "Clinical trial summary.pdf",
+        category: "Metrics",
+        size: "760 KB",
+        confidential: true,
+        addedAt: at(900),
+      },
+    ],
+    access: [
+      {
+        id: "a1",
+        startupId: MY_STARTUP_ID,
+        investorId: "i1",
+        status: "granted",
+        ndaSigned: true,
+        ndaSignedName: "Anaya Krishnan",
+        requestedAt: at(2500),
+        downloads: 6,
+      },
+      {
+        id: "a2",
+        startupId: MY_STARTUP_ID,
+        investorId: "i3",
+        status: "pending",
+        ndaSigned: false,
+        ndaSignedName: "",
+        requestedAt: at(140),
+        downloads: 0,
+      },
+    ],
+    programs: [
+      {
+        id: "p1",
+        name: "Seed Sprint",
+        cohort: "Autumn 2026",
+        seats: 12,
+        enrolled: ["s1", "s2", "s5"],
+        mentor: "Dr. Meera Joshi",
+        status: "running",
+        startsOn: "2026-09-01",
+      },
+      {
+        id: "p2",
+        name: "Deep Tech Residency",
+        cohort: "Autumn 2026",
+        seats: 8,
+        enrolled: ["s4"],
+        mentor: "Prof. Alok Nair",
+        status: "open",
+        startsOn: "2026-10-05",
+      },
+      {
+        id: "p3",
+        name: "Investor Readiness Bootcamp",
+        cohort: "Summer 2026",
+        seats: 20,
+        enrolled: ["s3", "s6"],
+        mentor: "Kavya Rao",
+        status: "closed",
+        startsOn: "2026-05-12",
+      },
+    ],
+    students: [
+      {
+        id: "u1",
+        name: "Aayush Patil",
+        email: "aayush@coep.ac.in",
+        branch: "Computer Engineering",
+        year: "Final year",
+        startupId: "s1",
+        verified: true,
+      },
+      {
+        id: "u2",
+        name: "Ishita Rane",
+        email: "ishita@vjti.ac.in",
+        branch: "Electronics",
+        year: "Third year",
+        startupId: "s2",
+        verified: true,
+      },
+      {
+        id: "u3",
+        name: "Kabir Shah",
+        email: "kabir@iiitb.ac.in",
+        branch: "Information Technology",
+        year: "Second year",
+        startupId: "s3",
+        verified: false,
+      },
+      {
+        id: "u4",
+        name: "Neha Verma",
+        email: "neha@iitd.ac.in",
+        branch: "Biomedical",
+        year: "PhD",
+        startupId: "s4",
+        verified: true,
+      },
+      {
+        id: "u5",
+        name: "Rahul Iyer",
+        email: "rahul@iiith.ac.in",
+        branch: "Electrical",
+        year: "Final year",
+        startupId: "s5",
+        verified: true,
+      },
+      {
+        id: "u6",
+        name: "Sana Qureshi",
+        email: "sana@annauniv.edu",
+        branch: "Computer Science",
+        year: "Third year",
+        startupId: "s6",
+        verified: false,
+      },
+    ],
     notifications: [
       {
         id: "n1",
@@ -145,6 +449,8 @@ function seed(): State {
   };
 }
 
+const rid = (p: string) => `${p}${Math.random().toString(36).slice(2, 9)}`;
+
 interface Ctx extends State {
   hydrated: boolean;
   unread: (role: Role) => number;
@@ -154,6 +460,21 @@ interface Ctx extends State {
   setReview: (id: string, status: ReviewStatus, note?: string) => void;
   toggleSaved: (id: string) => boolean;
   addRequest: (startupId: string, investorId: string, kind: ConnectionRequest["kind"]) => void;
+  setRequestStatus: (id: string, status: ConnectionRequest["status"]) => void;
+  sendMessage: (startupId: string, investorId: string, from: Message["from"], text: string) => void;
+  markThreadRead: (startupId: string, investorId: string, as: Message["from"]) => void;
+  requestMeeting: (m: Omit<Meeting, "id" | "status">) => void;
+  setMeetingStatus: (id: string, status: Meeting["status"]) => void;
+  addDoc: (doc: Omit<DataRoomDoc, "id" | "addedAt">) => void;
+  removeDoc: (id: string) => void;
+  requestAccess: (startupId: string, investorId: string) => void;
+  setAccessStatus: (id: string, status: DataRoomAccess["status"]) => void;
+  signNda: (startupId: string, investorId: string, name: string) => void;
+  registerDownload: (startupId: string, investorId: string) => void;
+  toggleEnrollment: (programId: string, startupId: string) => boolean;
+  setProgramStatus: (id: string, status: Program["status"]) => void;
+  addProgram: (p: Omit<Program, "id" | "enrolled">) => void;
+  setStudentVerified: (id: string, verified: boolean) => void;
   resetDemo: () => void;
 }
 
@@ -187,7 +508,7 @@ export function VentureProvider({ children }: { children: ReactNode }) {
       ...prev,
       notifications: [
         {
-          id: `n${Math.random().toString(36).slice(2, 9)}`,
+          id: rid("n"),
           role,
           title,
           body,
@@ -240,7 +561,7 @@ export function VentureProvider({ children }: { children: ReactNode }) {
           ...prev,
           requests: [
             {
-              id: `r${Math.random().toString(36).slice(2, 9)}`,
+              id: rid("r"),
               startupId,
               investorId,
               kind,
@@ -249,6 +570,133 @@ export function VentureProvider({ children }: { children: ReactNode }) {
             },
             ...prev.requests,
           ],
+        })),
+      setRequestStatus: (id, status) =>
+        setState((prev) => ({
+          ...prev,
+          requests: prev.requests.map((r) => (r.id === id ? { ...r, status } : r)),
+        })),
+      sendMessage: (startupId, investorId, from, text) =>
+        setState((prev) => ({
+          ...prev,
+          messages: [
+            ...prev.messages,
+            {
+              id: rid("m"),
+              startupId,
+              investorId,
+              from,
+              text,
+              at: new Date().toISOString(),
+              readByStudent: from === "student",
+              readByInvestor: from === "investor",
+            },
+          ],
+        })),
+      markThreadRead: (startupId, investorId, as) =>
+        setState((prev) => ({
+          ...prev,
+          messages: prev.messages.map((m) =>
+            m.startupId === startupId && m.investorId === investorId
+              ? as === "student"
+                ? { ...m, readByStudent: true }
+                : { ...m, readByInvestor: true }
+              : m,
+          ),
+        })),
+      requestMeeting: (m) =>
+        setState((prev) => ({
+          ...prev,
+          meetings: [{ ...m, id: rid("mt"), status: "requested" }, ...prev.meetings],
+        })),
+      setMeetingStatus: (id, status) =>
+        setState((prev) => ({
+          ...prev,
+          meetings: prev.meetings.map((m) => (m.id === id ? { ...m, status } : m)),
+        })),
+      addDoc: (doc) =>
+        setState((prev) => ({
+          ...prev,
+          docs: [{ ...doc, id: rid("d"), addedAt: new Date().toISOString() }, ...prev.docs],
+        })),
+      removeDoc: (id) =>
+        setState((prev) => ({ ...prev, docs: prev.docs.filter((d) => d.id !== id) })),
+      requestAccess: (startupId, investorId) =>
+        setState((prev) => {
+          if (prev.access.some((a) => a.startupId === startupId && a.investorId === investorId)) {
+            return prev;
+          }
+          return {
+            ...prev,
+            access: [
+              {
+                id: rid("a"),
+                startupId,
+                investorId,
+                status: "pending",
+                ndaSigned: false,
+                ndaSignedName: "",
+                requestedAt: new Date().toISOString(),
+                downloads: 0,
+              },
+              ...prev.access,
+            ],
+          };
+        }),
+      setAccessStatus: (id, status) =>
+        setState((prev) => ({
+          ...prev,
+          access: prev.access.map((a) => (a.id === id ? { ...a, status } : a)),
+        })),
+      signNda: (startupId, investorId, name) =>
+        setState((prev) => ({
+          ...prev,
+          access: prev.access.map((a) =>
+            a.startupId === startupId && a.investorId === investorId
+              ? { ...a, ndaSigned: true, ndaSignedName: name }
+              : a,
+          ),
+        })),
+      registerDownload: (startupId, investorId) =>
+        setState((prev) => ({
+          ...prev,
+          access: prev.access.map((a) =>
+            a.startupId === startupId && a.investorId === investorId
+              ? { ...a, downloads: a.downloads + 1 }
+              : a,
+          ),
+        })),
+      toggleEnrollment: (programId, startupId) => {
+        let added = false;
+        setState((prev) => ({
+          ...prev,
+          programs: prev.programs.map((p) => {
+            if (p.id !== programId) return p;
+            added = !p.enrolled.includes(startupId);
+            return {
+              ...p,
+              enrolled: added
+                ? [...p.enrolled, startupId]
+                : p.enrolled.filter((x) => x !== startupId),
+            };
+          }),
+        }));
+        return added;
+      },
+      setProgramStatus: (id, status) =>
+        setState((prev) => ({
+          ...prev,
+          programs: prev.programs.map((p) => (p.id === id ? { ...p, status } : p)),
+        })),
+      addProgram: (p) =>
+        setState((prev) => ({
+          ...prev,
+          programs: [{ ...p, id: rid("p"), enrolled: [] }, ...prev.programs],
+        })),
+      setStudentVerified: (id, verified) =>
+        setState((prev) => ({
+          ...prev,
+          students: prev.students.map((s) => (s.id === id ? { ...s, verified } : s)),
         })),
       resetDemo: () => setState(seed()),
     }),
@@ -270,6 +718,16 @@ export function timeAgo(iso: string) {
   const hours = Math.round(mins / 60);
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
+}
+
+export function formatWhen(iso: string) {
+  return new Date(iso).toLocaleString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export const STATUS_LABEL: Record<ReviewStatus, string> = {
