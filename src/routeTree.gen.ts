@@ -16,6 +16,7 @@ import { Route as AppUniversityRouteImport } from './routes/app.university'
 import { Route as AppStudentDiscoverRouteImport } from './routes/app.student.discover'
 import { Route as AppStudentMeetingsRouteImport } from './routes/app.student.meetings'
 import { Route as AppStudentMessagesRouteImport } from './routes/app.student.messages'
+import { Route as AppStudentSettingsRouteImport } from './routes/app.student.settings'
 import { Route as AppStudentStartupRouteImport } from './routes/app.student.startup'
 import { Route as AppUniversityReviewRouteImport } from './routes/app.university.review'
 import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
@@ -55,6 +56,11 @@ const AppStudentMessagesRoute = AppStudentMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => AppStudentRoute,
 } as any)
+const AppStudentSettingsRoute = AppStudentSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppStudentRoute,
+} as any)
 const AppStudentStartupRoute = AppStudentStartupRouteImport.update({
   id: '/startup',
   path: '/startup',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
+  '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
+  '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
+  '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
+    | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
+    | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
+    | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -205,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentMessagesRouteImport
       parentRoute: typeof AppStudentRoute
     }
+    '/app/student/settings': {
+      id: '/app/student/settings'
+      path: '/settings'
+      fullPath: '/app/student/settings'
+      preLoaderRoute: typeof AppStudentSettingsRouteImport
+      parentRoute: typeof AppStudentRoute
+    }
     '/app/student/startup': {
       id: '/app/student/startup'
       path: '/startup'
@@ -245,6 +264,7 @@ interface AppStudentRouteChildren {
   AppStudentDiscoverRoute: typeof AppStudentDiscoverRoute
   AppStudentMeetingsRoute: typeof AppStudentMeetingsRoute
   AppStudentMessagesRoute: typeof AppStudentMessagesRoute
+  AppStudentSettingsRoute: typeof AppStudentSettingsRoute
   AppStudentStartupRoute: typeof AppStudentStartupRoute
 }
 
@@ -252,6 +272,7 @@ const AppStudentRouteChildren: AppStudentRouteChildren = {
   AppStudentDiscoverRoute: AppStudentDiscoverRoute,
   AppStudentMeetingsRoute: AppStudentMeetingsRoute,
   AppStudentMessagesRoute: AppStudentMessagesRoute,
+  AppStudentSettingsRoute: AppStudentSettingsRoute,
   AppStudentStartupRoute: AppStudentStartupRoute,
 }
 
