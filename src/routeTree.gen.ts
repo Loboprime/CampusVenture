@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppInvestorRouteImport } from './routes/app.investor'
 import { Route as AppStudentRouteImport } from './routes/app.student'
 import { Route as AppUniversityRouteImport } from './routes/app.university'
+import { Route as AppStudentDiscoverRouteImport } from './routes/app.student.discover'
 import { Route as AppStudentStartupRouteImport } from './routes/app.student.startup'
 import { Route as AppUniversityReviewRouteImport } from './routes/app.university.review'
 import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
@@ -37,6 +38,11 @@ const AppUniversityRoute = AppUniversityRouteImport.update({
   path: '/app/university',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppStudentDiscoverRoute = AppStudentDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => AppStudentRoute,
+} as any)
 const AppStudentStartupRoute = AppStudentStartupRouteImport.update({
   id: '/startup',
   path: '/startup',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/discover'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/discover'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/discover'
     | '/app/student/startup'
     | '/app/university/review'
     | '/app/investor/startup/$id'
@@ -148,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUniversityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/student/discover': {
+      id: '/app/student/discover'
+      path: '/discover'
+      fullPath: '/app/student/discover'
+      preLoaderRoute: typeof AppStudentDiscoverRouteImport
+      parentRoute: typeof AppStudentRoute
+    }
     '/app/student/startup': {
       id: '/app/student/startup'
       path: '/startup'
@@ -185,10 +204,12 @@ const AppInvestorRouteWithChildren = AppInvestorRoute._addFileChildren(
 )
 
 interface AppStudentRouteChildren {
+  AppStudentDiscoverRoute: typeof AppStudentDiscoverRoute
   AppStudentStartupRoute: typeof AppStudentStartupRoute
 }
 
 const AppStudentRouteChildren: AppStudentRouteChildren = {
+  AppStudentDiscoverRoute: AppStudentDiscoverRoute,
   AppStudentStartupRoute: AppStudentStartupRoute,
 }
 
