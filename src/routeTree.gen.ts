@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppInvestorRouteImport } from './routes/app.investor'
 import { Route as AppStudentRouteImport } from './routes/app.student'
 import { Route as AppUniversityRouteImport } from './routes/app.university'
+import { Route as AppStudentDataroomRouteImport } from './routes/app.student.dataroom'
 import { Route as AppStudentDiscoverRouteImport } from './routes/app.student.discover'
 import { Route as AppStudentMeetingsRouteImport } from './routes/app.student.meetings'
 import { Route as AppStudentMessagesRouteImport } from './routes/app.student.messages'
@@ -40,6 +41,11 @@ const AppUniversityRoute = AppUniversityRouteImport.update({
   id: '/app/university',
   path: '/app/university',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppStudentDataroomRoute = AppStudentDataroomRouteImport.update({
+  id: '/dataroom',
+  path: '/dataroom',
+  getParentRoute: () => AppStudentRoute,
 } as any)
 const AppStudentDiscoverRoute = AppStudentDiscoverRouteImport.update({
   id: '/discover',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
   '/app/student/messages': typeof AppStudentMessagesRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
     | '/app/student/messages'
@@ -195,6 +207,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/university'
       preLoaderRoute: typeof AppUniversityRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/student/dataroom': {
+      id: '/app/student/dataroom'
+      path: '/dataroom'
+      fullPath: '/app/student/dataroom'
+      preLoaderRoute: typeof AppStudentDataroomRouteImport
+      parentRoute: typeof AppStudentRoute
     }
     '/app/student/discover': {
       id: '/app/student/discover'
@@ -261,6 +280,7 @@ const AppInvestorRouteWithChildren = AppInvestorRoute._addFileChildren(
 )
 
 interface AppStudentRouteChildren {
+  AppStudentDataroomRoute: typeof AppStudentDataroomRoute
   AppStudentDiscoverRoute: typeof AppStudentDiscoverRoute
   AppStudentMeetingsRoute: typeof AppStudentMeetingsRoute
   AppStudentMessagesRoute: typeof AppStudentMessagesRoute
@@ -269,6 +289,7 @@ interface AppStudentRouteChildren {
 }
 
 const AppStudentRouteChildren: AppStudentRouteChildren = {
+  AppStudentDataroomRoute: AppStudentDataroomRoute,
   AppStudentDiscoverRoute: AppStudentDiscoverRoute,
   AppStudentMeetingsRoute: AppStudentMeetingsRoute,
   AppStudentMessagesRoute: AppStudentMessagesRoute,
