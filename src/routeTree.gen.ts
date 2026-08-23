@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppInvestorRouteImport } from './routes/app.investor'
 import { Route as AppStudentRouteImport } from './routes/app.student'
 import { Route as AppUniversityRouteImport } from './routes/app.university'
+import { Route as AppInvestorMeetingsRouteImport } from './routes/app.investor.meetings'
 import { Route as AppInvestorMessagesRouteImport } from './routes/app.investor.messages'
 import { Route as AppStudentDataroomRouteImport } from './routes/app.student.dataroom'
 import { Route as AppStudentDiscoverRouteImport } from './routes/app.student.discover'
@@ -42,6 +43,11 @@ const AppUniversityRoute = AppUniversityRouteImport.update({
   id: '/app/university',
   path: '/app/university',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppInvestorMeetingsRoute = AppInvestorMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => AppInvestorRoute,
 } as any)
 const AppInvestorMessagesRoute = AppInvestorMessagesRouteImport.update({
   id: '/messages',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/meetings': typeof AppInvestorMeetingsRoute
   '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/meetings': typeof AppInvestorMeetingsRoute
   '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/meetings': typeof AppInvestorMeetingsRoute
   '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/meetings'
     | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/meetings'
     | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/meetings'
     | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
@@ -219,6 +231,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/university'
       preLoaderRoute: typeof AppUniversityRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/investor/meetings': {
+      id: '/app/investor/meetings'
+      path: '/meetings'
+      fullPath: '/app/investor/meetings'
+      preLoaderRoute: typeof AppInvestorMeetingsRouteImport
+      parentRoute: typeof AppInvestorRoute
     }
     '/app/investor/messages': {
       id: '/app/investor/messages'
@@ -287,11 +306,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppInvestorRouteChildren {
+  AppInvestorMeetingsRoute: typeof AppInvestorMeetingsRoute
   AppInvestorMessagesRoute: typeof AppInvestorMessagesRoute
   AppInvestorStartupIdRoute: typeof AppInvestorStartupIdRoute
 }
 
 const AppInvestorRouteChildren: AppInvestorRouteChildren = {
+  AppInvestorMeetingsRoute: AppInvestorMeetingsRoute,
   AppInvestorMessagesRoute: AppInvestorMessagesRoute,
   AppInvestorStartupIdRoute: AppInvestorStartupIdRoute,
 }
