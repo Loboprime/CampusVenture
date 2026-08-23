@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppInvestorRouteImport } from './routes/app.investor'
 import { Route as AppStudentRouteImport } from './routes/app.student'
 import { Route as AppUniversityRouteImport } from './routes/app.university'
+import { Route as AppInvestorMessagesRouteImport } from './routes/app.investor.messages'
 import { Route as AppStudentDataroomRouteImport } from './routes/app.student.dataroom'
 import { Route as AppStudentDiscoverRouteImport } from './routes/app.student.discover'
 import { Route as AppStudentMeetingsRouteImport } from './routes/app.student.meetings'
@@ -41,6 +42,11 @@ const AppUniversityRoute = AppUniversityRouteImport.update({
   id: '/app/university',
   path: '/app/university',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppInvestorMessagesRoute = AppInvestorMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AppInvestorRoute,
 } as any)
 const AppStudentDataroomRoute = AppStudentDataroomRouteImport.update({
   id: '/dataroom',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/app/investor': typeof AppInvestorRouteWithChildren
   '/app/student': typeof AppStudentRouteWithChildren
   '/app/university': typeof AppUniversityRouteWithChildren
+  '/app/investor/messages': typeof AppInvestorMessagesRoute
   '/app/student/dataroom': typeof AppStudentDataroomRoute
   '/app/student/discover': typeof AppStudentDiscoverRoute
   '/app/student/meetings': typeof AppStudentMeetingsRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/app/investor'
     | '/app/student'
     | '/app/university'
+    | '/app/investor/messages'
     | '/app/student/dataroom'
     | '/app/student/discover'
     | '/app/student/meetings'
@@ -207,6 +219,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/university'
       preLoaderRoute: typeof AppUniversityRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/investor/messages': {
+      id: '/app/investor/messages'
+      path: '/messages'
+      fullPath: '/app/investor/messages'
+      preLoaderRoute: typeof AppInvestorMessagesRouteImport
+      parentRoute: typeof AppInvestorRoute
     }
     '/app/student/dataroom': {
       id: '/app/student/dataroom'
@@ -268,10 +287,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppInvestorRouteChildren {
+  AppInvestorMessagesRoute: typeof AppInvestorMessagesRoute
   AppInvestorStartupIdRoute: typeof AppInvestorStartupIdRoute
 }
 
 const AppInvestorRouteChildren: AppInvestorRouteChildren = {
+  AppInvestorMessagesRoute: AppInvestorMessagesRoute,
   AppInvestorStartupIdRoute: AppInvestorStartupIdRoute,
 }
 
