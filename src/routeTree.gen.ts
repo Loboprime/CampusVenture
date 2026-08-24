@@ -27,6 +27,7 @@ import { Route as AppStudentStartupRouteImport } from './routes/app.student.star
 import { Route as AppUniversityInvestorsRouteImport } from './routes/app.university.investors'
 import { Route as AppUniversityProgramsRouteImport } from './routes/app.university.programs'
 import { Route as AppUniversityReviewRouteImport } from './routes/app.university.review'
+import { Route as AppUniversitySettingsRouteImport } from './routes/app.university.settings'
 import { Route as AppUniversityStartupsRouteImport } from './routes/app.university.startups'
 import { Route as AppUniversityStudentsRouteImport } from './routes/app.university.students'
 import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
@@ -121,6 +122,11 @@ const AppUniversityReviewRoute = AppUniversityReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => AppUniversityRoute,
 } as any)
+const AppUniversitySettingsRoute = AppUniversitySettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
 const AppUniversityStartupsRoute = AppUniversityStartupsRouteImport.update({
   id: '/startups',
   path: '/startups',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/app/university/investors': typeof AppUniversityInvestorsRoute
   '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
   '/app/university/startups': typeof AppUniversityStartupsRoute
   '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/app/university/investors': typeof AppUniversityInvestorsRoute
   '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
   '/app/university/startups': typeof AppUniversityStartupsRoute
   '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/app/university/investors': typeof AppUniversityInvestorsRoute
   '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
   '/app/university/startups': typeof AppUniversityStartupsRoute
   '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/app/university/investors'
     | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
     | '/app/university/startups'
     | '/app/university/students'
     | '/app/investor/startup/$id'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/app/university/investors'
     | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
     | '/app/university/startups'
     | '/app/university/students'
     | '/app/investor/startup/$id'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/app/university/investors'
     | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
     | '/app/university/startups'
     | '/app/university/students'
     | '/app/investor/startup/$id'
@@ -414,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUniversityReviewRouteImport
       parentRoute: typeof AppUniversityRoute
     }
+    '/app/university/settings': {
+      id: '/app/university/settings'
+      path: '/settings'
+      fullPath: '/app/university/settings'
+      preLoaderRoute: typeof AppUniversitySettingsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
     '/app/university/startups': {
       id: '/app/university/startups'
       path: '/startups'
@@ -486,6 +505,7 @@ interface AppUniversityRouteChildren {
   AppUniversityInvestorsRoute: typeof AppUniversityInvestorsRoute
   AppUniversityProgramsRoute: typeof AppUniversityProgramsRoute
   AppUniversityReviewRoute: typeof AppUniversityReviewRoute
+  AppUniversitySettingsRoute: typeof AppUniversitySettingsRoute
   AppUniversityStartupsRoute: typeof AppUniversityStartupsRoute
   AppUniversityStudentsRoute: typeof AppUniversityStudentsRoute
 }
@@ -494,6 +514,7 @@ const AppUniversityRouteChildren: AppUniversityRouteChildren = {
   AppUniversityInvestorsRoute: AppUniversityInvestorsRoute,
   AppUniversityProgramsRoute: AppUniversityProgramsRoute,
   AppUniversityReviewRoute: AppUniversityReviewRoute,
+  AppUniversitySettingsRoute: AppUniversitySettingsRoute,
   AppUniversityStartupsRoute: AppUniversityStartupsRoute,
   AppUniversityStudentsRoute: AppUniversityStudentsRoute,
 }
