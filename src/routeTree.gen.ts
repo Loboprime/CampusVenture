@@ -25,6 +25,7 @@ import { Route as AppStudentMessagesRouteImport } from './routes/app.student.mes
 import { Route as AppStudentSettingsRouteImport } from './routes/app.student.settings'
 import { Route as AppStudentStartupRouteImport } from './routes/app.student.startup'
 import { Route as AppUniversityReviewRouteImport } from './routes/app.university.review'
+import { Route as AppUniversityStudentsRouteImport } from './routes/app.university.students'
 import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -107,6 +108,11 @@ const AppUniversityReviewRoute = AppUniversityReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => AppUniversityRoute,
 } as any)
+const AppUniversityStudentsRoute = AppUniversityStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
 const AppInvestorStartupIdRoute = AppInvestorStartupIdRouteImport.update({
   id: '/startup/$id',
   path: '/startup/$id',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesByTo {
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesById {
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRouteTypes {
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   id:
     | '__root__'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/app/student/settings'
     | '/app/student/startup'
     | '/app/university/review'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   fileRoutesById: FileRoutesById
 }
@@ -352,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUniversityReviewRouteImport
       parentRoute: typeof AppUniversityRoute
     }
+    '/app/university/students': {
+      id: '/app/university/students'
+      path: '/students'
+      fullPath: '/app/university/students'
+      preLoaderRoute: typeof AppUniversityStudentsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
     '/app/investor/startup/$id': {
       id: '/app/investor/startup/$id'
       path: '/startup/$id'
@@ -408,10 +427,12 @@ const AppStudentRouteWithChildren = AppStudentRoute._addFileChildren(
 
 interface AppUniversityRouteChildren {
   AppUniversityReviewRoute: typeof AppUniversityReviewRoute
+  AppUniversityStudentsRoute: typeof AppUniversityStudentsRoute
 }
 
 const AppUniversityRouteChildren: AppUniversityRouteChildren = {
   AppUniversityReviewRoute: AppUniversityReviewRoute,
+  AppUniversityStudentsRoute: AppUniversityStudentsRoute,
 }
 
 const AppUniversityRouteWithChildren = AppUniversityRoute._addFileChildren(
