@@ -24,7 +24,12 @@ import { Route as AppStudentMeetingsRouteImport } from './routes/app.student.mee
 import { Route as AppStudentMessagesRouteImport } from './routes/app.student.messages'
 import { Route as AppStudentSettingsRouteImport } from './routes/app.student.settings'
 import { Route as AppStudentStartupRouteImport } from './routes/app.student.startup'
+import { Route as AppUniversityInvestorsRouteImport } from './routes/app.university.investors'
+import { Route as AppUniversityProgramsRouteImport } from './routes/app.university.programs'
 import { Route as AppUniversityReviewRouteImport } from './routes/app.university.review'
+import { Route as AppUniversitySettingsRouteImport } from './routes/app.university.settings'
+import { Route as AppUniversityStartupsRouteImport } from './routes/app.university.startups'
+import { Route as AppUniversityStudentsRouteImport } from './routes/app.university.students'
 import { Route as AppInvestorStartupIdRouteImport } from './routes/app.investor.startup.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -102,9 +107,34 @@ const AppStudentStartupRoute = AppStudentStartupRouteImport.update({
   path: '/startup',
   getParentRoute: () => AppStudentRoute,
 } as any)
+const AppUniversityInvestorsRoute = AppUniversityInvestorsRouteImport.update({
+  id: '/investors',
+  path: '/investors',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
+const AppUniversityProgramsRoute = AppUniversityProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
 const AppUniversityReviewRoute = AppUniversityReviewRouteImport.update({
   id: '/review',
   path: '/review',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
+const AppUniversitySettingsRoute = AppUniversitySettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
+const AppUniversityStartupsRoute = AppUniversityStartupsRouteImport.update({
+  id: '/startups',
+  path: '/startups',
+  getParentRoute: () => AppUniversityRoute,
+} as any)
+const AppUniversityStudentsRoute = AppUniversityStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
   getParentRoute: () => AppUniversityRoute,
 } as any)
 const AppInvestorStartupIdRoute = AppInvestorStartupIdRouteImport.update({
@@ -129,7 +159,12 @@ export interface FileRoutesByFullPath {
   '/app/student/messages': typeof AppStudentMessagesRoute
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/university/investors': typeof AppUniversityInvestorsRoute
+  '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
+  '/app/university/startups': typeof AppUniversityStartupsRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesByTo {
@@ -148,7 +183,12 @@ export interface FileRoutesByTo {
   '/app/student/messages': typeof AppStudentMessagesRoute
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/university/investors': typeof AppUniversityInvestorsRoute
+  '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
+  '/app/university/startups': typeof AppUniversityStartupsRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRoutesById {
@@ -168,7 +208,12 @@ export interface FileRoutesById {
   '/app/student/messages': typeof AppStudentMessagesRoute
   '/app/student/settings': typeof AppStudentSettingsRoute
   '/app/student/startup': typeof AppStudentStartupRoute
+  '/app/university/investors': typeof AppUniversityInvestorsRoute
+  '/app/university/programs': typeof AppUniversityProgramsRoute
   '/app/university/review': typeof AppUniversityReviewRoute
+  '/app/university/settings': typeof AppUniversitySettingsRoute
+  '/app/university/startups': typeof AppUniversityStartupsRoute
+  '/app/university/students': typeof AppUniversityStudentsRoute
   '/app/investor/startup/$id': typeof AppInvestorStartupIdRoute
 }
 export interface FileRouteTypes {
@@ -189,7 +234,12 @@ export interface FileRouteTypes {
     | '/app/student/messages'
     | '/app/student/settings'
     | '/app/student/startup'
+    | '/app/university/investors'
+    | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
+    | '/app/university/startups'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -208,7 +258,12 @@ export interface FileRouteTypes {
     | '/app/student/messages'
     | '/app/student/settings'
     | '/app/student/startup'
+    | '/app/university/investors'
+    | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
+    | '/app/university/startups'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   id:
     | '__root__'
@@ -227,7 +282,12 @@ export interface FileRouteTypes {
     | '/app/student/messages'
     | '/app/student/settings'
     | '/app/student/startup'
+    | '/app/university/investors'
+    | '/app/university/programs'
     | '/app/university/review'
+    | '/app/university/settings'
+    | '/app/university/startups'
+    | '/app/university/students'
     | '/app/investor/startup/$id'
   fileRoutesById: FileRoutesById
 }
@@ -345,11 +405,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentStartupRouteImport
       parentRoute: typeof AppStudentRoute
     }
+    '/app/university/investors': {
+      id: '/app/university/investors'
+      path: '/investors'
+      fullPath: '/app/university/investors'
+      preLoaderRoute: typeof AppUniversityInvestorsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
+    '/app/university/programs': {
+      id: '/app/university/programs'
+      path: '/programs'
+      fullPath: '/app/university/programs'
+      preLoaderRoute: typeof AppUniversityProgramsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
     '/app/university/review': {
       id: '/app/university/review'
       path: '/review'
       fullPath: '/app/university/review'
       preLoaderRoute: typeof AppUniversityReviewRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
+    '/app/university/settings': {
+      id: '/app/university/settings'
+      path: '/settings'
+      fullPath: '/app/university/settings'
+      preLoaderRoute: typeof AppUniversitySettingsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
+    '/app/university/startups': {
+      id: '/app/university/startups'
+      path: '/startups'
+      fullPath: '/app/university/startups'
+      preLoaderRoute: typeof AppUniversityStartupsRouteImport
+      parentRoute: typeof AppUniversityRoute
+    }
+    '/app/university/students': {
+      id: '/app/university/students'
+      path: '/students'
+      fullPath: '/app/university/students'
+      preLoaderRoute: typeof AppUniversityStudentsRouteImport
       parentRoute: typeof AppUniversityRoute
     }
     '/app/investor/startup/$id': {
@@ -407,11 +502,21 @@ const AppStudentRouteWithChildren = AppStudentRoute._addFileChildren(
 )
 
 interface AppUniversityRouteChildren {
+  AppUniversityInvestorsRoute: typeof AppUniversityInvestorsRoute
+  AppUniversityProgramsRoute: typeof AppUniversityProgramsRoute
   AppUniversityReviewRoute: typeof AppUniversityReviewRoute
+  AppUniversitySettingsRoute: typeof AppUniversitySettingsRoute
+  AppUniversityStartupsRoute: typeof AppUniversityStartupsRoute
+  AppUniversityStudentsRoute: typeof AppUniversityStudentsRoute
 }
 
 const AppUniversityRouteChildren: AppUniversityRouteChildren = {
+  AppUniversityInvestorsRoute: AppUniversityInvestorsRoute,
+  AppUniversityProgramsRoute: AppUniversityProgramsRoute,
   AppUniversityReviewRoute: AppUniversityReviewRoute,
+  AppUniversitySettingsRoute: AppUniversitySettingsRoute,
+  AppUniversityStartupsRoute: AppUniversityStartupsRoute,
+  AppUniversityStudentsRoute: AppUniversityStudentsRoute,
 }
 
 const AppUniversityRouteWithChildren = AppUniversityRoute._addFileChildren(
