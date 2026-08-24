@@ -12,7 +12,6 @@ import {
   Rocket,
   Search,
   Settings,
-  Sparkles,
   Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
