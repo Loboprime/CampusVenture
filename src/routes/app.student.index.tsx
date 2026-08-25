@@ -16,7 +16,7 @@ const TITLE = "Founder Dashboard — CampusVenture";
 const DESCRIPTION =
   "Track investment readiness, profile completeness and investor interest for your student startup.";
 
-export const Route = createFileRoute("/app/student")({
+export const Route = createFileRoute("/app/student/")({
   head: () => ({
     meta: [
       { title: TITLE },
