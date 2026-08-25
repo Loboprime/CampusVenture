@@ -96,21 +96,24 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur lg:px-8">
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="uppercase tracking-wide">
-              Demo account
-            </Badge>
-            <span className="hidden text-sm text-muted-foreground sm:inline">{ROLE_LABEL[role]}</span>
-          </div>
+        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur transition-colors duration-300 lg:px-8">
+          <Link to="/" className="flex items-center gap-2 lg:hidden">
+            <span className="grid size-8 place-items-center rounded-lg bg-gradient-brand text-xs font-bold text-primary-foreground">
+              CV
+            </span>
+            <span className="text-sm font-semibold">CampusVenture</span>
+          </Link>
+          <div className="hidden lg:block" />
           <div className="flex items-center gap-1">
             <RoleSwitch current={role} />
             <NotificationBell role={role} />
             <ThemeToggle />
+            <AccountMenu role={role} />
           </div>
         </header>
 
         <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+
         <nav
           className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur lg:hidden"
           aria-label="Sections"
