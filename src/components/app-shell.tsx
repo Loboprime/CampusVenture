@@ -66,11 +66,13 @@ const NAV: Record<Role, NavItem[]> = {
   ],
 };
 
-const ROLE_LABEL: Record<Role, string> = {
-  student: "Demo Student Founder",
-  investor: "Demo Investor",
-  university: "Demo University",
+const ACCOUNT: Record<Role, { name: string; org: string; settings: string }> = {
+  student: { name: "Aayush Patil", org: "Student founder", settings: "/app/student/settings" },
+  investor: { name: "Anaya Krishnan", org: "Investor", settings: "/app/investor/settings" },
+  university: { name: "COEP Innovation Cell", org: "University", settings: "/app/university/settings" },
 };
+
+
 
 
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
