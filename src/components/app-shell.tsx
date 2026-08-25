@@ -8,17 +8,28 @@ import {
   FolderLock,
   GraduationCap,
   LayoutDashboard,
+  LogOut,
   MessagesSquare,
   Rocket,
   Search,
   Settings,
+  User,
   Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/demo-data";
+
 
 interface NavItem {
   label: string;
@@ -55,11 +66,13 @@ const NAV: Record<Role, NavItem[]> = {
   ],
 };
 
-const ROLE_LABEL: Record<Role, string> = {
-  student: "Demo Student Founder",
-  investor: "Demo Investor",
-  university: "Demo University",
+const ACCOUNT: Record<Role, { name: string; org: string; settings: string }> = {
+  student: { name: "Aayush Patil", org: "Student founder", settings: "/app/student/settings" },
+  investor: { name: "Anaya Krishnan", org: "Investor", settings: "/app/investor/settings" },
+  university: { name: "COEP Innovation Cell", org: "University", settings: "/app/university/settings" },
 };
+
+
 
 
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
@@ -96,36 +109,43 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur lg:px-8">
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="uppercase tracking-wide">
-              Demo account
-            </Badge>
-            <span className="hidden text-sm text-muted-foreground sm:inline">{ROLE_LABEL[role]}</span>
-          </div>
+        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur transition-colors duration-300 lg:px-8">
+          <Link to="/" className="flex items-center gap-2 lg:hidden">
+            <span className="grid size-8 place-items-center rounded-lg bg-gradient-brand text-xs font-bold text-primary-foreground">
+              CV
+            </span>
+            <span className="text-sm font-semibold">CampusVenture</span>
+          </Link>
+          <div className="hidden lg:block" />
           <div className="flex items-center gap-1">
             <RoleSwitch current={role} />
             <NotificationBell role={role} />
             <ThemeToggle />
+            <AccountMenu role={role} />
           </div>
         </header>
 
         <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+
         <nav
-          className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur lg:hidden"
+          className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur transition-colors duration-300 lg:hidden"
           aria-label="Sections"
         >
-          {items.slice(0, 5).map((item) => (
+          {[...items.slice(0, 4), items[items.length - 1]!].map((item) => (
             <Link
               key={item.label}
               to={item.to}
-              className="flex flex-col items-center gap-1 px-2 text-[11px] text-muted-foreground"
+              className={cn(
+                "flex flex-col items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground transition-colors duration-200 active:scale-95",
+                pathname === item.to && "text-primary",
+              )}
             >
               <item.icon className="size-5" aria-hidden="true" />
               {item.label.split(" ")[0]}
             </Link>
           ))}
         </nav>
+
       </div>
     </div>
   );
@@ -150,5 +170,67 @@ function RoleSwitch({ current }: { current: Role }) {
         </Link>
       ))}
     </div>
+  );
+}
+
+function AccountMenu({ role }: { role: Role }) {
+  const account = ACCOUNT[role];
+  const initials = account.name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("");
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Account menu"
+          className="transition-transform duration-200 active:scale-95"
+        >
+          <span className="grid size-7 place-items-center rounded-full bg-gradient-brand text-[11px] font-semibold text-primary-foreground">
+            {initials}
+          </span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="space-y-0.5">
+          <p className="text-sm font-medium leading-none">{account.name}</p>
+          <p className="text-xs font-normal text-muted-foreground">{account.org}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to={account.settings}>
+            <User className="size-4" aria-hidden="true" /> Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to={account.settings}>
+            <Settings className="size-4" aria-hidden="true" /> Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="sm:hidden">
+          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+            Switch role
+          </DropdownMenuLabel>
+          {(["student", "investor", "university"] as Role[]).map((r) => (
+            <DropdownMenuItem key={r} asChild>
+              <Link to={`/app/${r}`} className="capitalize">
+                {r}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+        </div>
+        <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
+          <Link to="/">
+            <LogOut className="size-4" aria-hidden="true" /> Log out
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
