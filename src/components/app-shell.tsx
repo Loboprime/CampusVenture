@@ -168,3 +168,65 @@ function RoleSwitch({ current }: { current: Role }) {
     </div>
   );
 }
+
+function AccountMenu({ role }: { role: Role }) {
+  const account = ACCOUNT[role];
+  const initials = account.name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("");
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Account menu"
+          className="transition-transform duration-200 active:scale-95"
+        >
+          <span className="grid size-7 place-items-center rounded-full bg-gradient-brand text-[11px] font-semibold text-primary-foreground">
+            {initials}
+          </span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="space-y-0.5">
+          <p className="text-sm font-medium leading-none">{account.name}</p>
+          <p className="text-xs font-normal text-muted-foreground">{account.org}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to={account.settings}>
+            <User className="size-4" aria-hidden="true" /> Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to={account.settings}>
+            <Settings className="size-4" aria-hidden="true" /> Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="sm:hidden">
+          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+            Switch role
+          </DropdownMenuLabel>
+          {(["student", "investor", "university"] as Role[]).map((r) => (
+            <DropdownMenuItem key={r} asChild>
+              <Link to={`/app/${r}`} className="capitalize">
+                {r}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+        </div>
+        <DropdownMenuItem asChild variant="destructive">
+          <Link to="/">
+            <LogOut className="size-4" aria-hidden="true" /> Log out
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
