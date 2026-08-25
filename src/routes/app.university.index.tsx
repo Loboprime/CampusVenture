@@ -22,7 +22,7 @@ const TITLE = "University Ecosystem Dashboard — CampusVenture";
 const DESCRIPTION =
   "Monitor student startups, readiness distribution, investor interest and incubation programs.";
 
-export const Route = createFileRoute("/app/university")({
+export const Route = createFileRoute("/app/university/")({
   head: () => ({
     meta: [
       { title: TITLE },
