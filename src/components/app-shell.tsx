@@ -221,7 +221,7 @@ function AccountMenu({ role }: { role: Role }) {
           ))}
           <DropdownMenuSeparator />
         </div>
-        <DropdownMenuItem asChild variant="destructive">
+        <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
           <Link to="/">
             <LogOut className="size-4" aria-hidden="true" /> Log out
           </Link>
