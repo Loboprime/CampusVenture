@@ -8,17 +8,28 @@ import {
   FolderLock,
   GraduationCap,
   LayoutDashboard,
+  LogOut,
   MessagesSquare,
   Rocket,
   Search,
   Settings,
+  User,
   Users,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/demo-data";
+
 
 interface NavItem {
   label: string;
