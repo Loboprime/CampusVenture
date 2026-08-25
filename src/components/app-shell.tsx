@@ -128,20 +128,24 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
         <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
 
         <nav
-          className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur lg:hidden"
+          className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur transition-colors duration-300 lg:hidden"
           aria-label="Sections"
         >
-          {items.slice(0, 5).map((item) => (
+          {[...items.slice(0, 4), items[items.length - 1]!].map((item) => (
             <Link
               key={item.label}
               to={item.to}
-              className="flex flex-col items-center gap-1 px-2 text-[11px] text-muted-foreground"
+              className={cn(
+                "flex flex-col items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground transition-colors duration-200 active:scale-95",
+                pathname === item.to && "text-primary",
+              )}
             >
               <item.icon className="size-5" aria-hidden="true" />
               {item.label.split(" ")[0]}
             </Link>
           ))}
         </nav>
+
       </div>
     </div>
   );
