@@ -37,7 +37,7 @@ const ME = DEMO_INVESTORS[0]!;
 type SortKey = "match" | "readiness" | "updated" | "funding";
 
 function InvestorDashboard() {
-  const { startups, saved, toggleSaved, addRequest, requests, notify } = useVenture();
+  const { startups, saved, toggleSaved, addRequest, requestAccess, requests, notify } = useVenture();
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("all");
   const [stage, setStage] = useState("all");
@@ -267,6 +267,7 @@ function InvestorDashboard() {
                       variant="outline"
                       onClick={() => {
                         addRequest(startup.id, ME.id, "dataroom");
+                        requestAccess(startup.id, ME.id);
                         notify("student", "Data-room request", `${ME.organization} requested access.`);
                         toast.info(`Data-room request sent to ${startup.name}`, {
                           description: "The founder must approve, then both parties accept the NDA.",

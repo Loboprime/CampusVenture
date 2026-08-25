@@ -35,7 +35,7 @@ function embedUrl(url: string) {
 
 function StartupDetail() {
   const { id } = useParams({ from: "/app/investor/startup/$id" });
-  const { startups, saved, toggleSaved, addRequest, notify } = useVenture();
+  const { startups, saved, toggleSaved, addRequest, requestAccess, notify } = useVenture();
   const startup = startups.find((s) => s.id === id);
 
   if (!startup) {
@@ -190,6 +190,7 @@ function StartupDetail() {
                 size="sm"
                 onClick={() => {
                   addRequest(startup.id, investor.id, "dataroom");
+                  requestAccess(startup.id, investor.id);
                   notify("student", "Data-room request", `${investor.organization} requested access.`);
                   toast.success(`Data-room request sent to ${startup.name}`);
                 }}
