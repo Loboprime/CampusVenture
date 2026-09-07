@@ -494,14 +494,39 @@ export function VentureProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
+  // Persist off the critical path: typing shouldn't pay for a full serialise.
   useEffect(() => {
     if (!hydrated) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* quota: ignore */
-    }
+    const idle =
+      typeof window !== "undefined" && "requestIdleCallback" in window
+        ? (cb: () => void) =>
+            (window as unknown as { requestIdleCallback: (c: () => void, o?: object) => number })
+              .requestIdleCallback(cb, { timeout: 1000 })
+        : (cb: () => void) => window.setTimeout(cb, 300);
+    const cancel =
+      typeof window !== "undefined" && "cancelIdleCallback" in window
+        ? (id: number) =>
+            (window as unknown as { cancelIdleCallback: (i: number) => void }).cancelIdleCallback(id)
+        : (id: number) => window.clearTimeout(id);
+
+    let pending: number | undefined;
+    const timer = window.setTimeout(() => {
+      const id = idle(() => {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {
+          /* quota: ignore */
+        }
+      });
+      pending = id;
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+      if (pending !== undefined) cancel(pending);
+    };
   }, [state, hydrated]);
+
 
   const notify = useCallback((role: Role, title: string, body: string) => {
     setState((prev) => ({

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useDebouncedField } from "@/hooks/use-debounced-field";
 import {
   CheckCircle2,
   FileUp,
@@ -52,6 +53,21 @@ function MyStartup() {
   const startup = startups[0]!;
   const fileRef = useRef<HTMLInputElement>(null);
   const [github, setGithub] = useState(startup.githubUrl);
+  const [problem, setProblem] = useDebouncedField(startup.problem, (v) =>
+    updateStartup(startup.id, { problem: v }),
+  );
+  const [solution, setSolution] = useDebouncedField(startup.solution, (v) =>
+    updateStartup(startup.id, { solution: v }),
+  );
+  const [model, setModel] = useDebouncedField(startup.businessModel, (v) =>
+    updateStartup(startup.id, { businessModel: v }),
+  );
+  const [traction, setTraction] = useDebouncedField(startup.traction, (v) =>
+    updateStartup(startup.id, { traction: v }),
+  );
+  const [videoUrl, setVideoUrl] = useDebouncedField(startup.videoUrl, (v) =>
+    updateStartup(startup.id, { videoUrl: v }),
+  );
 
   const pct = completeness(startup);
   const embed = embedUrl(startup.videoUrl);
@@ -154,12 +170,12 @@ function MyStartup() {
                 <Textarea
                   id="problem"
                   rows={7}
-                  value={startup.problem}
+                  value={problem}
                   placeholder="Engineering students wait days for coursework feedback…"
-                  onChange={(e) => updateStartup(startup.id, { problem: e.target.value })}
+                  onChange={(e) => setProblem(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {startup.problem.trim().split(/\s+/).filter(Boolean).length} words · aim for 60–120
+                  {problem.trim().split(/\s+/).filter(Boolean).length} words · aim for 60–120
                 </p>
               </CardContent>
             </Card>
@@ -179,9 +195,9 @@ function MyStartup() {
                   <Textarea
                     id="solution"
                     rows={6}
-                    value={startup.solution}
+                    value={solution}
                     placeholder="An adaptive AI tutor that grades in minutes…"
-                    onChange={(e) => updateStartup(startup.id, { solution: e.target.value })}
+                    onChange={(e) => setSolution(e.target.value)}
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -189,16 +205,16 @@ function MyStartup() {
                     <Label htmlFor="model">Business model</Label>
                     <Input
                       id="model"
-                      value={startup.businessModel}
-                      onChange={(e) => updateStartup(startup.id, { businessModel: e.target.value })}
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="traction">Traction</Label>
                     <Input
                       id="traction"
-                      value={startup.traction}
-                      onChange={(e) => updateStartup(startup.id, { traction: e.target.value })}
+                      value={traction}
+                      onChange={(e) => setTraction(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -241,9 +257,9 @@ function MyStartup() {
                   <Label htmlFor="video">Video URL</Label>
                   <Input
                     id="video"
-                    value={startup.videoUrl}
+                    value={videoUrl}
                     placeholder="https://www.youtube.com/watch?v=…"
-                    onChange={(e) => updateStartup(startup.id, { videoUrl: e.target.value })}
+                    onChange={(e) => setVideoUrl(e.target.value)}
                   />
                 </div>
                 {embed ? (
