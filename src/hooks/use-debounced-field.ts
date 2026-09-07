@@ -10,6 +10,7 @@ export function useDebouncedField<T>(
   delay = 300,
 ): [T, (value: T) => void] {
   const [local, setLocal] = useState<T>(external);
+  const localRef = useRef<T>(external);
   const dirty = useRef(false);
   const commitRef = useRef(commit);
   commitRef.current = commit;
@@ -18,6 +19,8 @@ export function useDebouncedField<T>(
   useEffect(() => {
     if (!dirty.current) setLocal(external);
   }, [external]);
+
+  localRef.current = local;
 
   useEffect(() => {
     if (!dirty.current) return;
@@ -34,9 +37,6 @@ export function useDebouncedField<T>(
     },
     [],
   );
-
-  const localRef = useRef(local);
-  localRef.current = local;
 
   return [
     local,
