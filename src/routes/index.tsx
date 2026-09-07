@@ -81,7 +81,7 @@ const STEPS = [
 function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="grid size-8 place-items-center rounded-lg bg-gradient-brand text-sm font-bold text-primary-foreground">
