@@ -509,6 +509,7 @@ export function VentureProvider({ children }: { children: ReactNode }) {
             (window as unknown as { cancelIdleCallback: (i: number) => void }).cancelIdleCallback(id)
         : (id: number) => window.clearTimeout(id);
 
+    let pending: number | undefined;
     const timer = window.setTimeout(() => {
       const id = idle(() => {
         try {
@@ -519,7 +520,6 @@ export function VentureProvider({ children }: { children: ReactNode }) {
       });
       pending = id;
     }, 250);
-    let pending: number | undefined;
 
     return () => {
       window.clearTimeout(timer);
