@@ -878,6 +878,7 @@ export type Database = {
       }
       in_conversation: { Args: { _conversation: string }; Returns: boolean }
       owns_startup: { Args: { _startup: string }; Returns: boolean }
+      startup_is_visible: { Args: { _startup: string }; Returns: boolean }
     }
     Enums: {
       access_status: "pending" | "granted" | "revoked"
