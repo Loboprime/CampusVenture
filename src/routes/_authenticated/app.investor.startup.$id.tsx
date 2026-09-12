@@ -13,7 +13,7 @@ const TITLE = "Startup Profile — CampusVenture";
 const DESCRIPTION =
   "Full startup profile: problem, solution, video pitch, deck, GitHub project and match rationale.";
 
-export const Route = createFileRoute("/app/investor/startup/$id")({
+export const Route = createFileRoute("/_authenticated/app/investor/startup/$id")({
   head: () => ({
     meta: [
       { title: TITLE },

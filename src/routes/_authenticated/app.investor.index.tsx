@@ -21,7 +21,7 @@ const TITLE = "Investor Dashboard — CampusVenture";
 const DESCRIPTION =
   "Discover, filter and shortlist verified student startups with transparent match scoring.";
 
-export const Route = createFileRoute("/app/investor/")({
+export const Route = createFileRoute("/_authenticated/app/investor/")({
   head: () => ({
     meta: [
       { title: TITLE },

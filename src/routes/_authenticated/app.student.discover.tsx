@@ -15,7 +15,7 @@ const TITLE = "Discover Investors — CampusVenture";
 const DESCRIPTION =
   "Find investors whose sector, stage and cheque size match your student startup, and open a conversation.";
 
-export const Route = createFileRoute("/app/student/discover")({
+export const Route = createFileRoute("/_authenticated/app/student/discover")({
   head: () => ({
     meta: [
       { title: TITLE },

@@ -20,7 +20,7 @@ import { useVenture } from "@/lib/store";
 const TITLE = "Students — CampusVenture University";
 const DESCRIPTION = "Verify student founders, see their startups and manage campus enrolment.";
 
-export const Route = createFileRoute("/app/university/students")({
+export const Route = createFileRoute("/_authenticated/app/university/students")({
   head: () => ({
     meta: [
       { title: TITLE },

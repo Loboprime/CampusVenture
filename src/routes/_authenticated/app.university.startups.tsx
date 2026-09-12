@@ -20,7 +20,7 @@ import { STATUS_LABEL, completeness, useVenture } from "@/lib/store";
 const TITLE = "Campus Startups — CampusVenture University";
 const DESCRIPTION = "Track every student startup on campus: stage, readiness, funding ask and status.";
 
-export const Route = createFileRoute("/app/university/startups")({
+export const Route = createFileRoute("/_authenticated/app/university/startups")({
   head: () => ({
     meta: [
       { title: TITLE },

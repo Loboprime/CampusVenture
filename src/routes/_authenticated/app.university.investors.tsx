@@ -18,7 +18,7 @@ const TITLE = "Investor Interest — CampusVenture University";
 const DESCRIPTION =
   "See which investors are engaging with your campus startups: requests, data rooms and meetings.";
 
-export const Route = createFileRoute("/app/university/investors")({
+export const Route = createFileRoute("/_authenticated/app/university/investors")({
   head: () => ({
     meta: [
       { title: TITLE },

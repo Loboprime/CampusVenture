@@ -5,7 +5,7 @@ import { MessagesView } from "@/components/messages-view";
 const TITLE = "Messages — CampusVenture Investor";
 const DESCRIPTION = "Message student founders directly about traction, metrics and next steps.";
 
-export const Route = createFileRoute("/app/investor/messages")({
+export const Route = createFileRoute("/_authenticated/app/investor/messages")({
   head: () => ({
     meta: [
       { title: TITLE },

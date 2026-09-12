@@ -5,7 +5,7 @@ import { MeetingsView } from "@/components/meetings-view";
 const TITLE = "Meetings — CampusVenture Investor";
 const DESCRIPTION = "Book and manage calls with student founders in your pipeline.";
 
-export const Route = createFileRoute("/app/investor/meetings")({
+export const Route = createFileRoute("/_authenticated/app/investor/meetings")({
   head: () => ({
     meta: [
       { title: TITLE },

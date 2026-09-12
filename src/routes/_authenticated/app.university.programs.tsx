@@ -21,7 +21,7 @@ import { useVenture, type Program } from "@/lib/store";
 const TITLE = "Programs — CampusVenture University";
 const DESCRIPTION = "Run accelerator cohorts: manage seats, mentors, enrolment and programme status.";
 
-export const Route = createFileRoute("/app/university/programs")({
+export const Route = createFileRoute("/_authenticated/app/university/programs")({
   head: () => ({
     meta: [
       { title: TITLE },

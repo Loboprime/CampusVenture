@@ -5,7 +5,7 @@ import { SettingsView } from "@/components/settings-view";
 const TITLE = "Settings — CampusVenture Founder";
 const DESCRIPTION = "Update your founder profile, notification preferences and workspace data.";
 
-export const Route = createFileRoute("/app/student/settings")({
+export const Route = createFileRoute("/_authenticated/app/student/settings")({
   head: () => ({
     meta: [
       { title: TITLE },

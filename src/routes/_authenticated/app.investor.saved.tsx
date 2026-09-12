@@ -12,7 +12,7 @@ import { MY_INVESTOR_ID, useVenture } from "@/lib/store";
 const TITLE = "Saved Startups — CampusVenture Investor";
 const DESCRIPTION = "Your watchlist of student startups, with live match scores and quick actions.";
 
-export const Route = createFileRoute("/app/investor/saved")({
+export const Route = createFileRoute("/_authenticated/app/investor/saved")({
   head: () => ({
     meta: [
       { title: TITLE },

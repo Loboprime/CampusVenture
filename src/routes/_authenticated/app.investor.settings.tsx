@@ -5,7 +5,7 @@ import { SettingsView } from "@/components/settings-view";
 const TITLE = "Settings — CampusVenture Investor";
 const DESCRIPTION = "Update your fund profile, deal alerts and workspace preferences.";
 
-export const Route = createFileRoute("/app/investor/settings")({
+export const Route = createFileRoute("/_authenticated/app/investor/settings")({
   head: () => ({
     meta: [
       { title: TITLE },
