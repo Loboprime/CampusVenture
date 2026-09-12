@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedAppInvestorIndexRouteImport } from './routes/_authenticated/app.investor.index'
 import { Route as AuthenticatedAppInvestorDataroomRouteImport } from './routes/_authenticated/app.investor.dataroom'
 import { Route as AuthenticatedAppInvestorMeetingsRouteImport } from './routes/_authenticated/app.investor.meetings'
@@ -37,135 +40,151 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetRoute = AuthResetRouteImport.update({
+  id: '/reset',
+  path: '/reset',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthenticatedAppInvestorIndexRoute =
   AuthenticatedAppInvestorIndexRouteImport.update({
-    id: '/_authenticated/app/investor/',
+    id: '/app/investor/',
     path: '/app/investor/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorDataroomRoute =
   AuthenticatedAppInvestorDataroomRouteImport.update({
-    id: '/_authenticated/app/investor/dataroom',
+    id: '/app/investor/dataroom',
     path: '/app/investor/dataroom',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorMeetingsRoute =
   AuthenticatedAppInvestorMeetingsRouteImport.update({
-    id: '/_authenticated/app/investor/meetings',
+    id: '/app/investor/meetings',
     path: '/app/investor/meetings',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorMessagesRoute =
   AuthenticatedAppInvestorMessagesRouteImport.update({
-    id: '/_authenticated/app/investor/messages',
+    id: '/app/investor/messages',
     path: '/app/investor/messages',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorSavedRoute =
   AuthenticatedAppInvestorSavedRouteImport.update({
-    id: '/_authenticated/app/investor/saved',
+    id: '/app/investor/saved',
     path: '/app/investor/saved',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorSettingsRoute =
   AuthenticatedAppInvestorSettingsRouteImport.update({
-    id: '/_authenticated/app/investor/settings',
+    id: '/app/investor/settings',
     path: '/app/investor/settings',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentIndexRoute =
   AuthenticatedAppStudentIndexRouteImport.update({
-    id: '/_authenticated/app/student/',
+    id: '/app/student/',
     path: '/app/student/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentDataroomRoute =
   AuthenticatedAppStudentDataroomRouteImport.update({
-    id: '/_authenticated/app/student/dataroom',
+    id: '/app/student/dataroom',
     path: '/app/student/dataroom',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentDiscoverRoute =
   AuthenticatedAppStudentDiscoverRouteImport.update({
-    id: '/_authenticated/app/student/discover',
+    id: '/app/student/discover',
     path: '/app/student/discover',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentMeetingsRoute =
   AuthenticatedAppStudentMeetingsRouteImport.update({
-    id: '/_authenticated/app/student/meetings',
+    id: '/app/student/meetings',
     path: '/app/student/meetings',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentMessagesRoute =
   AuthenticatedAppStudentMessagesRouteImport.update({
-    id: '/_authenticated/app/student/messages',
+    id: '/app/student/messages',
     path: '/app/student/messages',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentSettingsRoute =
   AuthenticatedAppStudentSettingsRouteImport.update({
-    id: '/_authenticated/app/student/settings',
+    id: '/app/student/settings',
     path: '/app/student/settings',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppStudentStartupRoute =
   AuthenticatedAppStudentStartupRouteImport.update({
-    id: '/_authenticated/app/student/startup',
+    id: '/app/student/startup',
     path: '/app/student/startup',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityIndexRoute =
   AuthenticatedAppUniversityIndexRouteImport.update({
-    id: '/_authenticated/app/university/',
+    id: '/app/university/',
     path: '/app/university/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityInvestorsRoute =
   AuthenticatedAppUniversityInvestorsRouteImport.update({
-    id: '/_authenticated/app/university/investors',
+    id: '/app/university/investors',
     path: '/app/university/investors',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityProgramsRoute =
   AuthenticatedAppUniversityProgramsRouteImport.update({
-    id: '/_authenticated/app/university/programs',
+    id: '/app/university/programs',
     path: '/app/university/programs',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityReviewRoute =
   AuthenticatedAppUniversityReviewRouteImport.update({
-    id: '/_authenticated/app/university/review',
+    id: '/app/university/review',
     path: '/app/university/review',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversitySettingsRoute =
   AuthenticatedAppUniversitySettingsRouteImport.update({
-    id: '/_authenticated/app/university/settings',
+    id: '/app/university/settings',
     path: '/app/university/settings',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityStartupsRoute =
   AuthenticatedAppUniversityStartupsRouteImport.update({
-    id: '/_authenticated/app/university/startups',
+    id: '/app/university/startups',
     path: '/app/university/startups',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppUniversityStudentsRoute =
   AuthenticatedAppUniversityStudentsRouteImport.update({
-    id: '/_authenticated/app/university/students',
+    id: '/app/university/students',
     path: '/app/university/students',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvestorStartupIdRoute =
   AuthenticatedAppInvestorStartupIdRouteImport.update({
-    id: '/_authenticated/app/investor/startup/$id',
+    id: '/app/investor/startup/$id',
     path: '/app/investor/startup/$id',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/reset': typeof AuthResetRoute
   '/app/investor/dataroom': typeof AuthenticatedAppInvestorDataroomRoute
   '/app/investor/meetings': typeof AuthenticatedAppInvestorMeetingsRoute
   '/app/investor/messages': typeof AuthenticatedAppInvestorMessagesRoute
@@ -190,6 +209,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/reset': typeof AuthResetRoute
   '/app/investor/dataroom': typeof AuthenticatedAppInvestorDataroomRoute
   '/app/investor/meetings': typeof AuthenticatedAppInvestorMeetingsRoute
   '/app/investor/messages': typeof AuthenticatedAppInvestorMessagesRoute
@@ -215,6 +236,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/reset': typeof AuthResetRoute
   '/_authenticated/app/investor/dataroom': typeof AuthenticatedAppInvestorDataroomRoute
   '/_authenticated/app/investor/meetings': typeof AuthenticatedAppInvestorMeetingsRoute
   '/_authenticated/app/investor/messages': typeof AuthenticatedAppInvestorMessagesRoute
@@ -241,6 +265,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/auth/reset'
     | '/app/investor/dataroom'
     | '/app/investor/meetings'
     | '/app/investor/messages'
@@ -265,6 +291,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/auth/reset'
     | '/app/investor/dataroom'
     | '/app/investor/meetings'
     | '/app/investor/messages'
@@ -289,6 +317,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/auth/reset'
     | '/_authenticated/app/investor/dataroom'
     | '/_authenticated/app/investor/meetings'
     | '/_authenticated/app/investor/messages'
@@ -314,6 +345,191 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset': {
+      id: '/auth/reset'
+      path: '/reset'
+      fullPath: '/auth/reset'
+      preLoaderRoute: typeof AuthResetRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/app/investor/': {
+      id: '/_authenticated/app/investor/'
+      path: '/app/investor'
+      fullPath: '/app/investor/'
+      preLoaderRoute: typeof AuthenticatedAppInvestorIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/dataroom': {
+      id: '/_authenticated/app/investor/dataroom'
+      path: '/app/investor/dataroom'
+      fullPath: '/app/investor/dataroom'
+      preLoaderRoute: typeof AuthenticatedAppInvestorDataroomRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/meetings': {
+      id: '/_authenticated/app/investor/meetings'
+      path: '/app/investor/meetings'
+      fullPath: '/app/investor/meetings'
+      preLoaderRoute: typeof AuthenticatedAppInvestorMeetingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/messages': {
+      id: '/_authenticated/app/investor/messages'
+      path: '/app/investor/messages'
+      fullPath: '/app/investor/messages'
+      preLoaderRoute: typeof AuthenticatedAppInvestorMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/saved': {
+      id: '/_authenticated/app/investor/saved'
+      path: '/app/investor/saved'
+      fullPath: '/app/investor/saved'
+      preLoaderRoute: typeof AuthenticatedAppInvestorSavedRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/settings': {
+      id: '/_authenticated/app/investor/settings'
+      path: '/app/investor/settings'
+      fullPath: '/app/investor/settings'
+      preLoaderRoute: typeof AuthenticatedAppInvestorSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/': {
+      id: '/_authenticated/app/student/'
+      path: '/app/student'
+      fullPath: '/app/student/'
+      preLoaderRoute: typeof AuthenticatedAppStudentIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/dataroom': {
+      id: '/_authenticated/app/student/dataroom'
+      path: '/app/student/dataroom'
+      fullPath: '/app/student/dataroom'
+      preLoaderRoute: typeof AuthenticatedAppStudentDataroomRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/discover': {
+      id: '/_authenticated/app/student/discover'
+      path: '/app/student/discover'
+      fullPath: '/app/student/discover'
+      preLoaderRoute: typeof AuthenticatedAppStudentDiscoverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/meetings': {
+      id: '/_authenticated/app/student/meetings'
+      path: '/app/student/meetings'
+      fullPath: '/app/student/meetings'
+      preLoaderRoute: typeof AuthenticatedAppStudentMeetingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/messages': {
+      id: '/_authenticated/app/student/messages'
+      path: '/app/student/messages'
+      fullPath: '/app/student/messages'
+      preLoaderRoute: typeof AuthenticatedAppStudentMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/settings': {
+      id: '/_authenticated/app/student/settings'
+      path: '/app/student/settings'
+      fullPath: '/app/student/settings'
+      preLoaderRoute: typeof AuthenticatedAppStudentSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/student/startup': {
+      id: '/_authenticated/app/student/startup'
+      path: '/app/student/startup'
+      fullPath: '/app/student/startup'
+      preLoaderRoute: typeof AuthenticatedAppStudentStartupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/': {
+      id: '/_authenticated/app/university/'
+      path: '/app/university'
+      fullPath: '/app/university/'
+      preLoaderRoute: typeof AuthenticatedAppUniversityIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/investors': {
+      id: '/_authenticated/app/university/investors'
+      path: '/app/university/investors'
+      fullPath: '/app/university/investors'
+      preLoaderRoute: typeof AuthenticatedAppUniversityInvestorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/programs': {
+      id: '/_authenticated/app/university/programs'
+      path: '/app/university/programs'
+      fullPath: '/app/university/programs'
+      preLoaderRoute: typeof AuthenticatedAppUniversityProgramsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/review': {
+      id: '/_authenticated/app/university/review'
+      path: '/app/university/review'
+      fullPath: '/app/university/review'
+      preLoaderRoute: typeof AuthenticatedAppUniversityReviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/settings': {
+      id: '/_authenticated/app/university/settings'
+      path: '/app/university/settings'
+      fullPath: '/app/university/settings'
+      preLoaderRoute: typeof AuthenticatedAppUniversitySettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/startups': {
+      id: '/_authenticated/app/university/startups'
+      path: '/app/university/startups'
+      fullPath: '/app/university/startups'
+      preLoaderRoute: typeof AuthenticatedAppUniversityStartupsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/university/students': {
+      id: '/_authenticated/app/university/students'
+      path: '/app/university/students'
+      fullPath: '/app/university/students'
+      preLoaderRoute: typeof AuthenticatedAppUniversityStudentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/investor/startup/$id': {
+      id: '/_authenticated/app/investor/startup/$id'
+      path: '/app/investor/startup/$id'
+      fullPath: '/app/investor/startup/$id'
+      preLoaderRoute: typeof AuthenticatedAppInvestorStartupIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+  }
+}
+
+interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppInvestorDataroomRoute: typeof AuthenticatedAppInvestorDataroomRoute
   AuthenticatedAppInvestorMeetingsRoute: typeof AuthenticatedAppInvestorMeetingsRoute
   AuthenticatedAppInvestorMessagesRoute: typeof AuthenticatedAppInvestorMessagesRoute
@@ -337,167 +553,7 @@ export interface RootRouteChildren {
   AuthenticatedAppInvestorStartupIdRoute: typeof AuthenticatedAppInvestorStartupIdRoute
 }
 
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/': {
-      id: '/_authenticated/app/investor/'
-      path: '/app/investor'
-      fullPath: '/app/investor/'
-      preLoaderRoute: typeof AuthenticatedAppInvestorIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/dataroom': {
-      id: '/_authenticated/app/investor/dataroom'
-      path: '/app/investor/dataroom'
-      fullPath: '/app/investor/dataroom'
-      preLoaderRoute: typeof AuthenticatedAppInvestorDataroomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/meetings': {
-      id: '/_authenticated/app/investor/meetings'
-      path: '/app/investor/meetings'
-      fullPath: '/app/investor/meetings'
-      preLoaderRoute: typeof AuthenticatedAppInvestorMeetingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/messages': {
-      id: '/_authenticated/app/investor/messages'
-      path: '/app/investor/messages'
-      fullPath: '/app/investor/messages'
-      preLoaderRoute: typeof AuthenticatedAppInvestorMessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/saved': {
-      id: '/_authenticated/app/investor/saved'
-      path: '/app/investor/saved'
-      fullPath: '/app/investor/saved'
-      preLoaderRoute: typeof AuthenticatedAppInvestorSavedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/settings': {
-      id: '/_authenticated/app/investor/settings'
-      path: '/app/investor/settings'
-      fullPath: '/app/investor/settings'
-      preLoaderRoute: typeof AuthenticatedAppInvestorSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/': {
-      id: '/_authenticated/app/student/'
-      path: '/app/student'
-      fullPath: '/app/student/'
-      preLoaderRoute: typeof AuthenticatedAppStudentIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/dataroom': {
-      id: '/_authenticated/app/student/dataroom'
-      path: '/app/student/dataroom'
-      fullPath: '/app/student/dataroom'
-      preLoaderRoute: typeof AuthenticatedAppStudentDataroomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/discover': {
-      id: '/_authenticated/app/student/discover'
-      path: '/app/student/discover'
-      fullPath: '/app/student/discover'
-      preLoaderRoute: typeof AuthenticatedAppStudentDiscoverRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/meetings': {
-      id: '/_authenticated/app/student/meetings'
-      path: '/app/student/meetings'
-      fullPath: '/app/student/meetings'
-      preLoaderRoute: typeof AuthenticatedAppStudentMeetingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/messages': {
-      id: '/_authenticated/app/student/messages'
-      path: '/app/student/messages'
-      fullPath: '/app/student/messages'
-      preLoaderRoute: typeof AuthenticatedAppStudentMessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/settings': {
-      id: '/_authenticated/app/student/settings'
-      path: '/app/student/settings'
-      fullPath: '/app/student/settings'
-      preLoaderRoute: typeof AuthenticatedAppStudentSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/student/startup': {
-      id: '/_authenticated/app/student/startup'
-      path: '/app/student/startup'
-      fullPath: '/app/student/startup'
-      preLoaderRoute: typeof AuthenticatedAppStudentStartupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/': {
-      id: '/_authenticated/app/university/'
-      path: '/app/university'
-      fullPath: '/app/university/'
-      preLoaderRoute: typeof AuthenticatedAppUniversityIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/investors': {
-      id: '/_authenticated/app/university/investors'
-      path: '/app/university/investors'
-      fullPath: '/app/university/investors'
-      preLoaderRoute: typeof AuthenticatedAppUniversityInvestorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/programs': {
-      id: '/_authenticated/app/university/programs'
-      path: '/app/university/programs'
-      fullPath: '/app/university/programs'
-      preLoaderRoute: typeof AuthenticatedAppUniversityProgramsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/review': {
-      id: '/_authenticated/app/university/review'
-      path: '/app/university/review'
-      fullPath: '/app/university/review'
-      preLoaderRoute: typeof AuthenticatedAppUniversityReviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/settings': {
-      id: '/_authenticated/app/university/settings'
-      path: '/app/university/settings'
-      fullPath: '/app/university/settings'
-      preLoaderRoute: typeof AuthenticatedAppUniversitySettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/startups': {
-      id: '/_authenticated/app/university/startups'
-      path: '/app/university/startups'
-      fullPath: '/app/university/startups'
-      preLoaderRoute: typeof AuthenticatedAppUniversityStartupsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/university/students': {
-      id: '/_authenticated/app/university/students'
-      path: '/app/university/students'
-      fullPath: '/app/university/students'
-      preLoaderRoute: typeof AuthenticatedAppUniversityStudentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/investor/startup/$id': {
-      id: '/_authenticated/app/investor/startup/$id'
-      path: '/app/investor/startup/$id'
-      fullPath: '/app/investor/startup/$id'
-      preLoaderRoute: typeof AuthenticatedAppInvestorStartupIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-  }
-}
-
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppInvestorDataroomRoute: AuthenticatedAppInvestorDataroomRoute,
   AuthenticatedAppInvestorMeetingsRoute: AuthenticatedAppInvestorMeetingsRoute,
   AuthenticatedAppInvestorMessagesRoute: AuthenticatedAppInvestorMessagesRoute,
@@ -525,6 +581,25 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedAppUniversityIndexRoute: AuthenticatedAppUniversityIndexRoute,
   AuthenticatedAppInvestorStartupIdRoute:
     AuthenticatedAppInvestorStartupIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface AuthRouteChildren {
+  AuthResetRoute: typeof AuthResetRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthResetRoute: AuthResetRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
