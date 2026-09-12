@@ -1,19 +1,12 @@
 import { Bell, CheckCheck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useVenture, timeAgo } from "@/lib/store";
-import type { Role } from "@/lib/demo-data";
 
-export function NotificationBell({ role }: { role: Role }) {
-  const { notifications, unread, markAllRead, hydrated } = useVenture();
-  const items = notifications.filter((n) => n.role === role);
-  const count = hydrated ? unread(role) : 0;
+export function NotificationBell() {
+  const { notifications, unreadCount, markAllRead, hydrated } = useVenture();
+  const count = hydrated ? unreadCount : 0;
 
   return (
     <Popover>
@@ -38,7 +31,7 @@ export function NotificationBell({ role }: { role: Role }) {
             variant="ghost"
             size="sm"
             className="h-7 px-2 text-xs"
-            onClick={() => markAllRead(role)}
+            onClick={() => void markAllRead()}
             disabled={count === 0}
           >
             <CheckCheck className="size-3.5" aria-hidden="true" />
@@ -46,11 +39,11 @@ export function NotificationBell({ role }: { role: Role }) {
           </Button>
         </div>
         <ScrollArea className="max-h-80">
-          {items.length === 0 ? (
+          {notifications.length === 0 ? (
             <p className="p-6 text-center text-sm text-muted-foreground">You're all caught up.</p>
           ) : (
             <ul className="divide-y">
-              {items.map((n) => (
+              {notifications.map((n) => (
                 <li key={n.id} className="flex gap-3 px-4 py-3">
                   <span
                     className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read ? "bg-muted" : "bg-primary"}`}
@@ -58,7 +51,7 @@ export function NotificationBell({ role }: { role: Role }) {
                   />
                   <div className="min-w-0">
                     <p className="text-sm font-medium leading-snug">{n.title}</p>
-                    <p className="text-xs text-muted-foreground">{n.body}</p>
+                    {n.body && <p className="text-xs text-muted-foreground">{n.body}</p>}
                     <p className="mt-1 text-[11px] text-muted-foreground">{timeAgo(n.at)}</p>
                   </div>
                 </li>
@@ -66,11 +59,6 @@ export function NotificationBell({ role }: { role: Role }) {
             </ul>
           )}
         </ScrollArea>
-        <div className="border-t px-4 py-2">
-          <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">
-            Live demo feed
-          </Badge>
-        </div>
       </PopoverContent>
     </Popover>
   );

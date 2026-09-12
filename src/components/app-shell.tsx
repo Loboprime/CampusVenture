@@ -1,5 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Building2,
@@ -8,6 +8,7 @@ import {
   FolderLock,
   GraduationCap,
   LayoutDashboard,
+  Loader2,
   LogOut,
   MessagesSquare,
   Rocket,
@@ -28,8 +29,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import type { Role } from "@/lib/demo-data";
-
+import { useVenture } from "@/lib/store";
+import type { Role } from "@/services/types";
 
 interface NavItem {
   label: string;
@@ -66,18 +67,29 @@ const NAV: Record<Role, NavItem[]> = {
   ],
 };
 
-const ACCOUNT: Record<Role, { name: string; org: string; settings: string }> = {
-  student: { name: "Aayush Patil", org: "Student founder", settings: "/app/student/settings" },
-  investor: { name: "Anaya Krishnan", org: "Investor", settings: "/app/investor/settings" },
-  university: { name: "COEP Innovation Cell", org: "University", settings: "/app/university/settings" },
+const HOME: Record<Role, string> = {
+  student: "/app/student",
+  investor: "/app/investor",
+  university: "/app/university",
 };
 
-
-
-
+/**
+ * Application frame. `role` is the area the page belongs to; anyone signed in
+ * with a different role is sent to their own dashboard.
+ */
 export function AppShell({ role, children }: { role: Role; children: ReactNode }) {
   const items = NAV[role];
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const { role: myRole, loading } = useVenture();
+
+  useEffect(() => {
+    if (!loading && myRole && myRole !== role) {
+      navigate({ to: HOME[myRole], replace: true });
+    }
+  }, [loading, myRole, role, navigate]);
+
+  const blocked = Boolean(myRole) && myRole !== role;
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,9 +115,6 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
             </Link>
           ))}
         </nav>
-        <div className="p-4 text-xs text-muted-foreground">
-          Auth is disabled in this build — role views are open for demo.
-        </div>
       </aside>
 
       <div className="lg:pl-64">
@@ -118,14 +127,21 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
           </Link>
           <div className="hidden lg:block" />
           <div className="flex items-center gap-1">
-            <RoleSwitch current={role} />
-            <NotificationBell role={role} />
+            <NotificationBell />
             <ThemeToggle />
             <AccountMenu role={role} />
           </div>
         </header>
 
-        <main className="px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="px-4 py-6 lg:px-8 lg:py-8">
+          {loading || blocked ? (
+            <div className="grid min-h-[50vh] place-items-center">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+            </div>
+          ) : (
+            children
+          )}
+        </main>
 
         <nav
           className="sticky bottom-0 z-20 flex items-center justify-around border-t bg-background/95 py-2 backdrop-blur-sm transition-colors duration-300 lg:hidden"
@@ -145,41 +161,23 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
             </Link>
           ))}
         </nav>
-
       </div>
     </div>
   );
 }
 
-function RoleSwitch({ current }: { current: Role }) {
-  const roles: Role[] = ["student", "investor", "university"];
-  return (
-    <div className="mr-1 hidden rounded-lg border p-0.5 sm:flex">
-      {roles.map((r) => (
-        <Link
-          key={r}
-          to={r === "student" ? "/app/student" : r === "investor" ? "/app/investor" : "/app/university"}
-          className={cn(
-            "rounded-md px-2.5 py-1 text-xs capitalize transition-colors",
-            r === current
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {r}
-        </Link>
-      ))}
-    </div>
-  );
-}
-
 function AccountMenu({ role }: { role: Role }) {
-  const account = ACCOUNT[role];
-  const initials = account.name
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("");
+  const { profile, user, signOut } = useVenture();
+  const navigate = useNavigate();
+  const name = profile?.fullName || user?.email || "Your account";
+  const settings = `${HOME[role]}/settings`;
+  const initials =
+    name
+      .split(" ")
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "CV";
 
   return (
     <DropdownMenu>
@@ -197,38 +195,31 @@ function AccountMenu({ role }: { role: Role }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="space-y-0.5">
-          <p className="text-sm font-medium leading-none">{account.name}</p>
-          <p className="text-xs font-normal text-muted-foreground">{account.org}</p>
+          <p className="text-sm font-medium leading-none">{name}</p>
+          <p className="text-xs font-normal capitalize text-muted-foreground">
+            {profile?.organization || role}
+          </p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to={account.settings}>
+          <Link to={settings}>
             <User className="size-4" aria-hidden="true" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={account.settings}>
+          <Link to={settings}>
             <Settings className="size-4" aria-hidden="true" /> Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <div className="sm:hidden">
-          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-            Switch role
-          </DropdownMenuLabel>
-          {(["student", "investor", "university"] as Role[]).map((r) => (
-            <DropdownMenuItem key={r} asChild>
-              <Link to={`/app/${r}`} className="capitalize">
-                {r}
-              </Link>
-            </DropdownMenuItem>
-          ))}
-          <DropdownMenuSeparator />
-        </div>
-        <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
-          <Link to="/">
-            <LogOut className="size-4" aria-hidden="true" /> Log out
-          </Link>
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onSelect={async () => {
+            await signOut();
+            navigate({ to: "/auth", replace: true });
+          }}
+        >
+          <LogOut className="size-4" aria-hidden="true" /> Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
