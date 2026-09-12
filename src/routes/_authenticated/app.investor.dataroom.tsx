@@ -23,7 +23,7 @@ const TITLE = "Data Rooms — CampusVenture Investor";
 const DESCRIPTION =
   "Sign the NDA and review confidential startup documents you have been granted access to.";
 
-export const Route = createFileRoute("/app/investor/dataroom")({
+export const Route = createFileRoute("/_authenticated/app/investor/dataroom")({
   head: () => ({
     meta: [
       { title: TITLE },

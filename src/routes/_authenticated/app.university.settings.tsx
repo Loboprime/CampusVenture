@@ -5,7 +5,7 @@ import { SettingsView } from "@/components/settings-view";
 const TITLE = "Settings — CampusVenture University";
 const DESCRIPTION = "Manage your innovation-cell profile, digests and workspace data.";
 
-export const Route = createFileRoute("/app/university/settings")({
+export const Route = createFileRoute("/_authenticated/app/university/settings")({
   head: () => ({
     meta: [
       { title: TITLE },

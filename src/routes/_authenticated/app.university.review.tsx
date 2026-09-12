@@ -15,7 +15,7 @@ const TITLE = "Startup Review Queue — CampusVenture";
 const DESCRIPTION =
   "Verify student startups: review problem, solution, deck and repository, then approve or request changes.";
 
-export const Route = createFileRoute("/app/university/review")({
+export const Route = createFileRoute("/_authenticated/app/university/review")({
   head: () => ({
     meta: [
       { title: TITLE },

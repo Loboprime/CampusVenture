@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { SettingsView } from "@/components/settings-view";
 
-const TITLE = "Settings — CampusVenture Investor";
-const DESCRIPTION = "Update your fund profile, deal alerts and workspace preferences.";
+const TITLE = "Settings — CampusVenture Founder";
+const DESCRIPTION = "Update your founder profile, notification preferences and workspace data.";
 
-export const Route = createFileRoute("/app/investor/settings")({
+export const Route = createFileRoute("/_authenticated/app/student/settings")({
   head: () => ({
     meta: [
       { title: TITLE },
@@ -14,15 +14,15 @@ export const Route = createFileRoute("/app/investor/settings")({
       { property: "og:description", content: DESCRIPTION },
     ],
   }),
-  component: InvestorSettings,
+  component: StudentSettings,
 });
 
-function InvestorSettings() {
+function StudentSettings() {
   return (
-    <AppShell role="investor">
+    <AppShell role="student">
       <div className="mx-auto max-w-5xl space-y-6">
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <SettingsView role="investor" />
+        <SettingsView role="student" />
       </div>
     </AppShell>
   );

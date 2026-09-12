@@ -20,7 +20,7 @@ const TITLE = "Data Room — CampusVenture Founder";
 const DESCRIPTION =
   "Share confidential documents with investors under NDA, and grant or revoke access at any time.";
 
-export const Route = createFileRoute("/app/student/dataroom")({
+export const Route = createFileRoute("/_authenticated/app/student/dataroom")({
   head: () => ({
     meta: [
       { title: TITLE },
