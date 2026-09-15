@@ -1,25 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { DEMO_INVESTORS } from "@/lib/demo-data";
-import { MY_INVESTOR_ID, MY_STARTUP_ID, timeAgo, useVenture } from "@/lib/store";
+import { timeAgo, useVenture } from "@/lib/store";
 
 /** Shared two-pane inbox. `as` decides which side of the thread you speak from. */
 export function MessagesView({ as }: { as: "student" | "investor" }) {
-  const { messages, startups, sendMessage, markThreadRead, notify } = useVenture();
+  const { messages, startups, investors, sendMessage, markThreadRead, startupId: myStartupId, investorId: myInvestorId } =
+    useVenture();
   const [active, setActive] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
 
   const threads = useMemo(() => {
     const map = new Map<string, { startupId: string; investorId: string; last: string; unread: number }>();
     for (const m of messages) {
-      if (as === "student" && m.startupId !== MY_STARTUP_ID) continue;
-      if (as === "investor" && m.investorId !== MY_INVESTOR_ID) continue;
+      if (as === "student" && m.startupId !== myStartupId) continue;
+      if (as === "investor" && m.investorId !== myInvestorId) continue;
       const key = `${m.startupId}:${m.investorId}`;
       const prev = map.get(key) ?? { startupId: m.startupId, investorId: m.investorId, last: m.at, unread: 0 };
       const unreadFlag = as === "student" ? !m.readByStudent : !m.readByInvestor;
@@ -30,13 +32,13 @@ export function MessagesView({ as }: { as: "student" | "investor" }) {
       });
     }
     return [...map.values()].sort((a, b) => b.last.localeCompare(a.last));
-  }, [messages, as]);
+  }, [messages, as, myStartupId, myInvestorId]);
 
   const activeKey = active ?? (threads[0] ? `${threads[0].startupId}:${threads[0].investorId}` : null);
   const [startupId, investorId] = (activeKey ?? ":").split(":");
 
   useEffect(() => {
-    if (startupId && investorId) markThreadRead(startupId, investorId, as);
+    if (startupId && investorId) void markThreadRead(startupId, investorId, as);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeKey]);
 
@@ -46,24 +48,26 @@ export function MessagesView({ as }: { as: "student" | "investor" }) {
 
   const title = (sId: string, iId: string) =>
     as === "student"
-      ? (DEMO_INVESTORS.find((i) => i.id === iId)?.name ?? "Investor")
+      ? (investors.find((i) => i.id === iId)?.name ?? "Investor")
       : (startups.find((s) => s.id === sId)?.name ?? "Startup");
 
   const subtitle = (sId: string, iId: string) =>
     as === "student"
-      ? (DEMO_INVESTORS.find((i) => i.id === iId)?.organization ?? "")
+      ? (investors.find((i) => i.id === iId)?.organization ?? "")
       : (startups.find((s) => s.id === sId)?.sector ?? "");
 
-  function send() {
+  async function send() {
     const text = draft.trim();
     if (!text || !startupId || !investorId) return;
-    sendMessage(startupId, investorId, as, text);
-    notify(
-      as === "student" ? "investor" : "student",
-      "New message",
-      `${title(startupId, investorId)}: ${text.slice(0, 60)}`,
-    );
-    setDraft("");
+    setSending(true);
+    try {
+      await sendMessage(startupId, investorId, as, text);
+      setDraft("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Message not sent.");
+    } finally {
+      setSending(false);
+    }
   }
 
   if (threads.length === 0) {
@@ -131,7 +135,7 @@ export function MessagesView({ as }: { as: "student" | "investor" }) {
           className="flex items-center gap-2 border-t p-3"
           onSubmit={(e) => {
             e.preventDefault();
-            send();
+            void send();
           }}
         >
           <Input
@@ -140,7 +144,7 @@ export function MessagesView({ as }: { as: "student" | "investor" }) {
             placeholder="Write a message…"
             aria-label="Message"
           />
-          <Button type="submit" size="icon" aria-label="Send message">
+          <Button type="submit" size="icon" aria-label="Send message" disabled={sending}>
             <Send className="size-4" aria-hidden="true" />
           </Button>
         </form>
