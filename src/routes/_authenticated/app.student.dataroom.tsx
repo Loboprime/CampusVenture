@@ -13,8 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DEMO_INVESTORS } from "@/lib/demo-data";
-import { MY_STARTUP_ID, timeAgo, useVenture, type DataRoomDoc } from "@/lib/store";
+import { timeAgo, useVenture } from "@/lib/store";
 
 const TITLE = "Data Room — CampusVenture Founder";
 const DESCRIPTION =
@@ -32,21 +31,16 @@ export const Route = createFileRoute("/_authenticated/app/student/dataroom")({
   component: StudentDataRoom,
 });
 
-const CATEGORIES: DataRoomDoc["category"][] = [
-  "Financials",
-  "Legal",
-  "Product",
-  "Metrics",
-  "Cap table",
-];
+const CATEGORIES = ["Financials", "Legal", "Product", "Metrics", "Cap table"];
 
 function StudentDataRoom() {
-  const { docs, access, addDoc, removeDoc, setAccessStatus, notify } = useVenture();
+  const { docs, access, investors, uploadDoc, removeDoc, setAccessStatus, startupId } = useVenture();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [category, setCategory] = useState<DataRoomDoc["category"]>("Financials");
+  const [category, setCategory] = useState("Financials");
+  const [uploading, setUploading] = useState(false);
 
-  const myDocs = docs.filter((d) => d.startupId === MY_STARTUP_ID);
-  const myAccess = access.filter((a) => a.startupId === MY_STARTUP_ID);
+  const myDocs = docs.filter((d) => d.startupId === startupId);
+  const myAccess = access.filter((a) => a.startupId === startupId);
 
   return (
     <AppShell role="student">
@@ -54,7 +48,8 @@ function StudentDataRoom() {
         <div>
           <h1 className="text-2xl font-semibold">Data room</h1>
           <p className="text-sm text-muted-foreground">
-            Confidential files are only visible to investors you approve after they sign the NDA.
+            Files are stored privately. Investors can only download them after you grant access and they
+            accept the NDA.
           </p>
         </div>
 
@@ -63,10 +58,10 @@ function StudentDataRoom() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <CardTitle className="text-base">Documents ({myDocs.length})</CardTitle>
-                <CardDescription>Upload financials, legal papers and metrics.</CardDescription>
+                <CardDescription>Upload financials, legal papers and metrics (max 50 MB).</CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Select value={category} onValueChange={(v) => setCategory(v as DataRoomDoc["category"])}>
+                <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger className="w-40">
                     <SelectValue />
                   </SelectTrigger>
@@ -82,22 +77,27 @@ function StudentDataRoom() {
                   ref={fileRef}
                   type="file"
                   className="hidden"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
-                    if (!file) return;
-                    addDoc({
-                      startupId: MY_STARTUP_ID,
-                      name: file.name,
-                      category,
-                      size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
-                      confidential: true,
-                    });
-                    toast.success(`${file.name} added to the data room`);
                     e.target.value = "";
+                    if (!file) return;
+                    if (file.size > 50 * 1024 * 1024) {
+                      toast.error("Files must be under 50 MB.");
+                      return;
+                    }
+                    setUploading(true);
+                    try {
+                      await uploadDoc(file, category, true);
+                      toast.success(`${file.name} uploaded`);
+                    } catch (error) {
+                      toast.error(error instanceof Error ? error.message : "Upload failed.");
+                    } finally {
+                      setUploading(false);
+                    }
                   }}
                 />
-                <Button size="sm" onClick={() => fileRef.current?.click()}>
-                  <FileUp className="size-4" aria-hidden="true" /> Upload
+                <Button size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
+                  <FileUp className="size-4" aria-hidden="true" /> {uploading ? "Uploading…" : "Upload"}
                 </Button>
               </div>
             </div>
@@ -127,9 +127,13 @@ function StudentDataRoom() {
                     size="icon"
                     variant="ghost"
                     aria-label={`Remove ${d.name}`}
-                    onClick={() => {
-                      removeDoc(d.id);
-                      toast("Document removed");
+                    onClick={async () => {
+                      try {
+                        await removeDoc(d);
+                        toast("Document removed");
+                      } catch {
+                        toast.error("Could not remove the document.");
+                      }
                     }}
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
@@ -152,14 +156,14 @@ function StudentDataRoom() {
               </p>
             )}
             {myAccess.map((a) => {
-              const inv = DEMO_INVESTORS.find((i) => i.id === a.investorId);
+              const inv = investors.find((i) => i.id === a.investorId);
               return (
                 <div
                   key={a.id}
                   className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
                 >
                   <div>
-                    <p className="text-sm font-medium">{inv?.name ?? a.investorId}</p>
+                    <p className="text-sm font-medium">{inv?.name ?? "Investor"}</p>
                     <p className="text-xs text-muted-foreground">
                       {inv?.organization} · requested {timeAgo(a.requestedAt)} · {a.downloads} downloads
                     </p>
@@ -173,9 +177,8 @@ function StudentDataRoom() {
                     {a.status !== "granted" ? (
                       <Button
                         size="sm"
-                        onClick={() => {
-                          setAccessStatus(a.id, "granted");
-                          notify("investor", "Data-room access granted", `${inv?.name} can now view files.`);
+                        onClick={async () => {
+                          await setAccessStatus(a.id, "granted", a.investorId);
                           toast.success("Access granted");
                         }}
                       >
@@ -185,8 +188,8 @@ function StudentDataRoom() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          setAccessStatus(a.id, "revoked");
+                        onClick={async () => {
+                          await setAccessStatus(a.id, "revoked", a.investorId);
                           toast("Access revoked");
                         }}
                       >

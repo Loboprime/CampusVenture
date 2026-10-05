@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScoreRing } from "@/components/score-ring";
-import { DEMO_INVESTORS, formatMoney, matchScore } from "@/lib/demo-data";
-import { MY_STARTUP_ID, useVenture } from "@/lib/store";
+import { formatMoney, matchScore } from "@/lib/demo-data";
+import { useVenture } from "@/lib/store";
 
 const TITLE = "Discover Investors — CampusVenture";
 const DESCRIPTION =
@@ -28,11 +28,14 @@ export const Route = createFileRoute("/_authenticated/app/student/discover")({
 });
 
 function DiscoverInvestors() {
-  const { startups, sendMessage, notify } = useVenture();
-  const startup = startups.find((s) => s.id === MY_STARTUP_ID)!;
+  const { myStartup: startup, investors, sendMessage } = useVenture();
   const [q, setQ] = useState("");
+  const [sending, setSending] = useState<string | null>(null);
 
-  const list = DEMO_INVESTORS.map((investor) => ({ investor, ...matchScore(investor, startup) }))
+  if (!startup) return <AppShell role="student">{null}</AppShell>;
+
+  const list = investors
+    .map((investor) => ({ investor, ...matchScore(investor, startup) }))
     .filter(({ investor }) =>
       `${investor.name} ${investor.organization} ${investor.sectors.join(" ")} ${investor.thesis}`
         .toLowerCase()
@@ -63,6 +66,12 @@ function DiscoverInvestors() {
             aria-label="Search investors"
           />
         </div>
+
+        {list.length === 0 && (
+          <p className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
+            No investors match that search.
+          </p>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           {list.map(({ investor, score, reasons }) => (
@@ -98,15 +107,22 @@ function DiscoverInvestors() {
                 </ul>
                 <Button
                   size="sm"
-                  onClick={() => {
-                    sendMessage(
-                      MY_STARTUP_ID,
-                      investor.id,
-                      "student",
-                      `Hi ${investor.name.split(" ")[0]}, I'm building ${startup.name} — ${startup.tagline} Would you be open to a short intro call?`,
-                    );
-                    notify("investor", "New intro message", `${startup.name} reached out.`);
-                    toast.success(`Intro sent to ${investor.name}`);
+                  disabled={sending === investor.id}
+                  onClick={async () => {
+                    setSending(investor.id);
+                    try {
+                      await sendMessage(
+                        startup.id,
+                        investor.id,
+                        "student",
+                        `Hi ${investor.name.split(" ")[0]}, I'm building ${startup.name}${startup.tagline ? ` — ${startup.tagline}` : ""}. Would you be open to a short intro call?`,
+                      );
+                      toast.success(`Intro sent to ${investor.name}`);
+                    } catch (error) {
+                      toast.error(error instanceof Error ? error.message : "Could not send.");
+                    } finally {
+                      setSending(null);
+                    }
                   }}
                 >
                   <MessagesSquare className="size-4" aria-hidden="true" /> Send intro
