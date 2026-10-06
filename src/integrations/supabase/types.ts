@@ -867,18 +867,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_investor_id: { Args: never; Returns: string }
-      has_dataroom_access: { Args: { _startup: string }; Returns: boolean }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      in_conversation: { Args: { _conversation: string }; Returns: boolean }
-      owns_startup: { Args: { _startup: string }; Returns: boolean }
-      startup_is_visible: { Args: { _startup: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       access_status: "pending" | "granted" | "revoked"
