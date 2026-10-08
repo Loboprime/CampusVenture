@@ -24,13 +24,23 @@ export const createNotification = createServerFn({ method: "POST" })
 
     let authorized = false;
     if (roleRow?.role === "university") {
-      const { data: student, error } = await context.supabase
-        .from("students")
-        .select("id")
-        .eq("user_id", data.targetUserId)
-        .maybeSingle();
-      if (error) throw error;
-      authorized = Boolean(student);
+      if (data.startupId) {
+        const { data: startup, error } = await context.supabase
+          .from("startups")
+          .select("owner_id")
+          .eq("id", data.startupId)
+          .maybeSingle();
+        if (error) throw error;
+        authorized = startup?.owner_id === data.targetUserId;
+      } else {
+        const { data: student, error } = await context.supabase
+          .from("students")
+          .select("id")
+          .eq("user_id", data.targetUserId)
+          .maybeSingle();
+        if (error) throw error;
+        authorized = Boolean(student);
+      }
     } else if (data.startupId && (roleRow?.role === "student" || roleRow?.role === "investor")) {
       const [{ data: startup, error: startupError }, { data: investor, error: investorError }] =
         await Promise.all([
