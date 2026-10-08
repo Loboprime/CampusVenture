@@ -35,6 +35,7 @@ export const universityService = {
       "verification",
       verified ? "Your student record was verified" : "Your student verification was withdrawn",
       "",
+      undefined,
     );
   },
 

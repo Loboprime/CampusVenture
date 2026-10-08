@@ -67,6 +67,8 @@ export interface ConnectionRequest {
   kind: "connection" | "dataroom";
   status: "pending" | "accepted" | "declined" | "cancelled";
   at: string;
+  investorName?: string;
+  investorOrganization?: string;
 }
 
 export interface Message {

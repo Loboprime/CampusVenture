@@ -93,6 +93,7 @@ export const dataRoomService = {
       "dataroom",
       "Data-room access requested",
       `${investorName} requested access to your documents.`,
+      startupId,
     );
     await auditService.log("dataroom.requested", "startup", startupId);
   },
@@ -108,6 +109,7 @@ export const dataRoomService = {
       "dataroom",
       status === "granted" ? "Data-room access granted" : "Data-room access revoked",
       "",
+      (await supabase.from("data_room_access").select("startup_id").eq("id", id).maybeSingle()).data?.startup_id,
     );
     await auditService.log(`dataroom.${status}`, "data_room_access", id);
   },

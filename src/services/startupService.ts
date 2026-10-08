@@ -132,6 +132,7 @@ export const startupService = {
       "review",
       status === "approved" ? "Your startup was approved" : "Changes requested",
       note || (status === "approved" ? "Your profile is now visible to investors." : ""),
+      id,
     );
   },
 

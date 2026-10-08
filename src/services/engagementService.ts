@@ -81,6 +81,7 @@ export const requestService = {
       "connection",
       kind === "connection" ? "New connection request" : "Data-room access requested",
       `${investorName} would like to connect.`,
+      startupId,
     );
     await auditService.log("connection.requested", "startup", startupId, { kind });
   },
@@ -172,7 +173,13 @@ export const messagingService = {
       .eq("id", conversationId);
     const target =
       from === "student" ? await userOfInvestor(investorId) : await ownerOfStartup(startupId);
-    await notificationService.send(target, "message", "New message", `${senderName}: ${text.slice(0, 80)}`);
+    await notificationService.send(
+      target,
+      "message",
+      "New message",
+      `${senderName}: ${text.slice(0, 80)}`,
+      startupId,
+    );
   },
 
   async markRead(conversationId: string, as: "student" | "investor") {
@@ -219,7 +226,13 @@ export const meetingService = {
       input.requestedBy === "student"
         ? await userOfInvestor(input.investorId)
         : await ownerOfStartup(input.startupId);
-    await notificationService.send(target, "meeting", "Meeting request", `${requesterName}: ${input.title}`);
+    await notificationService.send(
+      target,
+      "meeting",
+      "Meeting request",
+      `${requesterName}: ${input.title}`,
+      input.startupId,
+    );
   },
 
   async setStatus(id: string, status: Meeting["status"]) {
