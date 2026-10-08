@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, BadgeCheck, FolderLock, Github, Star } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
@@ -6,7 +6,8 @@ import { ScoreRing } from "@/components/score-ring";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DEMO_INVESTORS, formatMoney, matchScore } from "@/lib/demo-data";
+import { formatMoney, matchScore } from "@/lib/demo-data";
+import { videoEmbedUrl } from "@/lib/video";
 import { STATUS_LABEL, useVenture } from "@/lib/store";
 
 const TITLE = "Startup Profile — CampusVenture";
@@ -26,16 +27,12 @@ export const Route = createFileRoute("/_authenticated/app/investor/startup/$id")
 });
 
 function embedUrl(url: string) {
-  const yt = url.match(/(?:youtu\.be\/|v=)([\w-]{6,})/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  const vimeo = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
-  return null;
+  return videoEmbedUrl(url);
 }
 
 function StartupDetail() {
-  const { id } = useParams({ from: "/app/investor/startup/$id" });
-  const { startups, saved, toggleSaved, addRequest, requestAccess, notify } = useVenture();
+  const { id } = Route.useParams();
+  const { startups, saved, toggleSaved, addRequest, requestAccess, investors, investorId } = useVenture();
   const startup = startups.find((s) => s.id === id);
 
   if (!startup) {
@@ -51,8 +48,8 @@ function StartupDetail() {
     );
   }
 
-  const investor = DEMO_INVESTORS[0]!;
-  const { score, reasons } = matchScore(investor, startup);
+  const investor = investors.find((i) => i.id === investorId);
+  const { score, reasons } = matchScore(investor ?? { sectors: [], stages: [], ticketMin: 0, ticketMax: 0, geography: "", thesis: "" }, startup);
   const isSaved = saved.includes(startup.id);
   const embed = embedUrl(startup.videoUrl);
 
@@ -186,15 +183,7 @@ function StartupDetail() {
               <p className="text-muted-foreground">
                 {startup.deckName ? `1 document: ${startup.deckName}` : "No documents uploaded yet."}
               </p>
-              <Button
-                size="sm"
-                onClick={() => {
-                  addRequest(startup.id, investor.id, "dataroom");
-                  requestAccess(startup.id, investor.id);
-                  notify("student", "Data-room request", `${investor.organization} requested access.`);
-                  toast.success(`Data-room request sent to ${startup.name}`);
-                }}
-              >
+              <Button size="sm" onClick={() => void requestAccess(startup.id).then(() => toast.success(`Data-room request sent to ${startup.name}`)).catch((error) => toast.error(error instanceof Error ? error.message : "Request failed."))}>
                 Request access
               </Button>
             </CardContent>
@@ -204,19 +193,12 @@ function StartupDetail() {
         <div className="flex flex-wrap gap-2">
           <Button
             variant={isSaved ? "secondary" : "outline"}
-            onClick={() => {
-              const added = toggleSaved(startup.id);
-              toast.success(added ? `Saved ${startup.name}` : `Removed ${startup.name}`);
-            }}
+            onClick={() => void toggleSaved(startup.id).then((added) => toast.success(added ? `Saved ${startup.name}` : `Removed ${startup.name}`)).catch((error) => toast.error(error instanceof Error ? error.message : "Could not update your saved list."))}
           >
             {isSaved ? "Saved to watchlist" : "Save startup"}
           </Button>
           <Button
-            onClick={() => {
-              addRequest(startup.id, investor.id, "connection");
-              notify("student", "New connection request", `${investor.name} wants to connect.`);
-              toast.success(`Connection requested with ${startup.name}`);
-            }}
+            onClick={() => void addRequest(startup.id, "connection").then(() => toast.success(`Connection requested with ${startup.name}`)).catch((error) => toast.error(error instanceof Error ? error.message : "Request failed."))}
           >
             Request connection
           </Button>
