@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/app/university/students")(
 });
 
 function StudentsPage() {
-  const { students, startups, setStudentVerified, notify } = useVenture();
+  const { students, startups, setStudentVerified } = useVenture();
   const [q, setQ] = useState("");
 
   const rows = students.filter((s) =>
@@ -104,10 +104,9 @@ function StudentsPage() {
                           size="sm"
                           variant={s.verified ? "outline" : "default"}
                           onClick={() => {
-                            setStudentVerified(s.id, !s.verified);
-                            if (!s.verified)
-                              notify("student", "Student verified", `${s.name} is now verified.`);
-                            toast.success(s.verified ? `${s.name} unverified` : `${s.name} verified`);
+                            void setStudentVerified(s.id, !s.verified, s.userId).then(() => {
+                              toast.success(s.verified ? `${s.name} unverified` : `${s.name} verified`);
+                            }).catch((error) => toast.error(error instanceof Error ? error.message : "Could not update verification."));
                           }}
                         >
                           {s.verified ? (

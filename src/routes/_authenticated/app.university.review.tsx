@@ -76,24 +76,22 @@ function ReviewQueue() {
 }
 
 function ReviewCard({ id }: { id: string }) {
-  const { startups, setReview, notify } = useVenture();
-  const s = startups.find((x) => x.id === id)!;
+  const { startups, setReview } = useVenture();
+  const s = startups.find((x) => x.id === id);
+  if (!s) return null;
   const [note, setNote] = useState(s.reviewNote);
 
-  function decide(status: ReviewStatus) {
+  async function decide(status: ReviewStatus) {
     if (status === "rejected" && note.trim().length < 10) {
       toast.error("Add a short note so the founder knows what to fix.");
       return;
     }
-    setReview(s.id, status, note.trim());
-    notify(
-      "student",
-      status === "approved" ? "Startup verified" : "Changes requested",
-      status === "approved"
-        ? `${s.name} is now visible to investors.`
-        : `${s.name}: ${note.trim()}`,
-    );
-    toast.success(status === "approved" ? `${s.name} approved` : `Feedback sent to ${s.name}`);
+    try {
+      await setReview(s.id, status, note.trim());
+      toast.success(status === "approved" ? `${s.name} approved` : `Feedback sent to ${s.name}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save the review.");
+    }
   }
 
   return (
@@ -148,10 +146,10 @@ function ReviewCard({ id }: { id: string }) {
           aria-label={`Reviewer note for ${s.name}`}
         />
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" onClick={() => decide("approved")}>
+          <Button size="sm" onClick={() => void decide("approved")}>
             <Check className="size-4" aria-hidden="true" /> Approve
           </Button>
-          <Button size="sm" variant="outline" onClick={() => decide("rejected")}>
+          <Button size="sm" variant="outline" onClick={() => void decide("rejected")}>
             <X className="size-4" aria-hidden="true" /> Request changes
           </Button>
         </div>

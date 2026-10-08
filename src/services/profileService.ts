@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import type { ProfileRecord, Role } from "./types";
 
 export const profileService = {
@@ -32,10 +33,12 @@ export const profileService = {
   },
 
   async updateProfile(userId: string, patch: Partial<ProfileRecord>) {
-    const payload: Record<string, unknown> = {};
-    if (patch.fullName !== undefined) payload["full_name"] = patch.fullName;
-    if (patch.organization !== undefined) payload["organization"] = patch.organization;
-    if (patch.email !== undefined) payload["email"] = patch.email;
+    const payload: TablesUpdate<"profiles"> = {};
+    Object.assign(payload, {
+      ...(patch.fullName !== undefined && { full_name: patch.fullName }),
+      ...(patch.organization !== undefined && { organization: patch.organization }),
+      ...(patch.email !== undefined && { email: patch.email }),
+    });
     if (Object.keys(payload).length === 0) return;
     const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
     if (error) throw error;

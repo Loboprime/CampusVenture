@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import { auditService, notificationService } from "./notificationService";
 import type { Program, StudentRecord } from "./types";
 
@@ -39,11 +40,13 @@ export const universityService = {
   },
 
   async updateOwnStudentRecord(id: string, patch: Partial<StudentRecord>) {
-    const payload: Record<string, unknown> = {};
-    if (patch.name !== undefined) payload["name"] = patch.name;
-    if (patch.branch !== undefined) payload["branch"] = patch.branch;
-    if (patch.year !== undefined) payload["year"] = patch.year;
-    if (patch.university !== undefined) payload["university"] = patch.university;
+    const payload: TablesUpdate<"students"> = {};
+    Object.assign(payload, {
+      ...(patch.name !== undefined && { name: patch.name }),
+      ...(patch.branch !== undefined && { branch: patch.branch }),
+      ...(patch.year !== undefined && { year: patch.year }),
+      ...(patch.university !== undefined && { university: patch.university }),
+    });
     if (Object.keys(payload).length === 0) return;
     const { error } = await supabase.from("students").update(payload).eq("id", id);
     if (error) throw error;

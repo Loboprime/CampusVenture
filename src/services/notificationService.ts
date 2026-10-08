@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { createNotification } from "@/lib/notifications.functions";
 import type { NotificationRecord } from "./types";
 
 /**
@@ -23,9 +24,15 @@ export const notificationService = {
   },
 
   /** Create a notification for a specific user. Silently skips a missing target. */
-  async send(userId: string | null | undefined, type: string, title: string, body = "") {
+  async send(
+    userId: string | null | undefined,
+    type: string,
+    title: string,
+    body = "",
+    startupId?: string,
+  ) {
     if (!userId) return;
-    await supabase.from("notifications").insert({ user_id: userId, type, title, body });
+    await createNotification({ data: { targetUserId: userId, type, title, body, startupId } });
   },
 
   async markAllRead() {

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DEMO_INVESTORS, SECTORS, STAGES, formatMoney, matchScore } from "@/lib/demo-data";
+import { SECTORS, STAGES, formatMoney, matchScore } from "@/lib/demo-data";
 import { useVenture } from "@/lib/store";
 
 const TITLE = "Investor Dashboard — CampusVenture";
@@ -33,11 +33,11 @@ export const Route = createFileRoute("/_authenticated/app/investor/")({
   component: InvestorDashboard,
 });
 
-const ME = DEMO_INVESTORS[0]!;
 type SortKey = "match" | "readiness" | "updated" | "funding";
 
 function InvestorDashboard() {
-  const { startups, saved, toggleSaved, addRequest, requestAccess, requests, notify } = useVenture();
+  const { startups, saved, toggleSaved, addRequest, requestAccess, requests, investors, investorId, profile } = useVenture();
+  const me = investors.find((i) => i.id === investorId);
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("all");
   const [stage, setStage] = useState("all");
@@ -46,8 +46,8 @@ function InvestorDashboard() {
 
   const results = useMemo(() => {
     const list = startups
-      .filter((s) => s.status === "approved" || s.status === "pending")
-      .map((s) => ({ startup: s, ...matchScore(ME, s) }))
+      .filter((s) => s.status === "approved")
+      .map((s) => ({ startup: s, ...matchScore(me ?? { sectors: [], stages: [], ticketMin: 0, ticketMax: 0, geography: "", thesis: "" }, s) }))
       .filter(({ startup }) => {
         const q = query.trim().toLowerCase();
         const matchesQuery =
@@ -69,7 +69,7 @@ function InvestorDashboard() {
       if (sort === "updated") return b.startup.updatedAt.localeCompare(a.startup.updatedAt);
       return b.score - a.score;
     });
-  }, [startups, saved, savedOnly, query, sector, stage, sort]);
+  }, [startups, saved, savedOnly, query, sector, stage, sort, me]);
 
   const hasFilters = query !== "" || sector !== "all" || stage !== "all" || savedOnly;
 
@@ -80,8 +80,8 @@ function InvestorDashboard() {
     setSavedOnly(false);
   }
 
-  function toggleSave(id: string, name: string) {
-    const added = toggleSaved(id);
+  async function toggleSave(id: string, name: string) {
+    const added = await toggleSaved(id);
     toast.success(added ? `Saved ${name} to your watchlist` : `Removed ${name}`);
   }
 
@@ -91,8 +91,8 @@ function InvestorDashboard() {
         <div>
           <h1 className="text-2xl font-semibold">Discover startups</h1>
           <p className="text-sm text-muted-foreground">
-            {ME.organization} · sectors: {ME.sectors.join(", ")} · ticket{" "}
-            {formatMoney(ME.ticketMin)}–{formatMoney(ME.ticketMax)}
+            {me?.organization || profile?.organization || "Investor profile"} · sectors: {me?.sectors.join(", ") || "Add sectors in settings"} · ticket{" "}
+            {formatMoney(me?.ticketMin ?? 0)}–{formatMoney(me?.ticketMax ?? 0)}
           </p>
         </div>
 
@@ -247,32 +247,21 @@ function InvestorDashboard() {
                     <Button
                       size="sm"
                       variant={saved.includes(startup.id) ? "secondary" : "outline"}
-                      onClick={() => toggleSave(startup.id, startup.name)}
+                      onClick={() => void toggleSave(startup.id, startup.name)}
                     >
                       {saved.includes(startup.id) ? "Saved" : "Save"}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        addRequest(startup.id, ME.id, "connection");
-                        notify("student", "New connection request", `${ME.name} wants to connect.`);
-                        toast.success(`Connection requested with ${startup.name}`);
-                      }}
+                      onClick={() => void addRequest(startup.id, "connection").then(() => toast.success(`Connection requested with ${startup.name}`)).catch((error) => toast.error(error instanceof Error ? error.message : "Request failed."))}
                     >
                       Request connection
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        addRequest(startup.id, ME.id, "dataroom");
-                        requestAccess(startup.id, ME.id);
-                        notify("student", "Data-room request", `${ME.organization} requested access.`);
-                        toast.info(`Data-room request sent to ${startup.name}`, {
-                          description: "The founder must approve, then both parties accept the NDA.",
-                        });
-                      }}
+                      onClick={() => void requestAccess(startup.id).then(() => toast.info(`Data-room request sent to ${startup.name}`, { description: "The founder must approve, then both parties accept the NDA." })).catch((error) => toast.error(error instanceof Error ? error.message : "Request failed."))}
                     >
                       <FolderLock className="size-3.5" aria-hidden="true" />
                       Request data room

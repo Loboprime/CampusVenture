@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import type { Stage } from "@/lib/demo-data";
 import type { InvestorRecord } from "./types";
 
@@ -23,16 +24,18 @@ export const investorService = {
   },
 
   async update(id: string, patch: Partial<InvestorRecord>) {
-    const payload: Record<string, unknown> = {};
-    if (patch.name !== undefined) payload["name"] = patch.name;
-    if (patch.organization !== undefined) payload["organization"] = patch.organization;
-    if (patch.type !== undefined) payload["type"] = patch.type;
-    if (patch.sectors !== undefined) payload["sectors"] = patch.sectors;
-    if (patch.stages !== undefined) payload["stages"] = patch.stages;
-    if (patch.ticketMin !== undefined) payload["ticket_min"] = patch.ticketMin;
-    if (patch.ticketMax !== undefined) payload["ticket_max"] = patch.ticketMax;
-    if (patch.geography !== undefined) payload["geography"] = patch.geography;
-    if (patch.thesis !== undefined) payload["thesis"] = patch.thesis;
+    const payload: TablesUpdate<"investor_profiles"> = {};
+    Object.assign(payload, {
+      ...(patch.name !== undefined && { name: patch.name }),
+      ...(patch.organization !== undefined && { organization: patch.organization }),
+      ...(patch.type !== undefined && { type: patch.type }),
+      ...(patch.sectors !== undefined && { sectors: patch.sectors }),
+      ...(patch.stages !== undefined && { stages: patch.stages }),
+      ...(patch.ticketMin !== undefined && { ticket_min: patch.ticketMin }),
+      ...(patch.ticketMax !== undefined && { ticket_max: patch.ticketMax }),
+      ...(patch.geography !== undefined && { geography: patch.geography }),
+      ...(patch.thesis !== undefined && { thesis: patch.thesis }),
+    });
     if (Object.keys(payload).length === 0) return;
     const { error } = await supabase.from("investor_profiles").update(payload).eq("id", id);
     if (error) throw error;

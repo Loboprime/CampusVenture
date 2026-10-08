@@ -36,31 +36,34 @@ export const Route = createFileRoute("/_authenticated/app/university/programs")(
 const STATUSES: Program["status"][] = ["open", "running", "closed"];
 
 function ProgramsPage() {
-  const { programs, startups, toggleEnrollment, setProgramStatus, addProgram, notify } = useVenture();
+  const { programs, startups, toggleEnrollment, setProgramStatus, addProgram } = useVenture();
   const [name, setName] = useState("");
   const [cohort, setCohort] = useState("Spring 2027");
   const [mentor, setMentor] = useState("");
   const [seats, setSeats] = useState("10");
   const [startsOn, setStartsOn] = useState("");
 
-  function create() {
+  async function create() {
     if (!name.trim() || !mentor.trim() || !startsOn) {
       toast.error("Name, mentor and start date are required.");
       return;
     }
-    addProgram({
-      name: name.trim(),
-      cohort,
-      mentor: mentor.trim(),
-      seats: Number(seats),
-      status: "open",
-      startsOn,
-    });
-    notify("student", "New programme open", `${name.trim()} (${cohort}) is accepting applications.`);
-    toast.success("Programme created");
-    setName("");
-    setMentor("");
-    setStartsOn("");
+    try {
+      await addProgram({
+        name: name.trim(),
+        cohort,
+        mentor: mentor.trim(),
+        seats: Number(seats),
+        status: "open",
+        startsOn,
+      });
+      toast.success("Programme created");
+      setName("");
+      setMentor("");
+      setStartsOn("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not create the programme.");
+    }
   }
 
   return (
@@ -112,7 +115,7 @@ function ProgramsPage() {
               />
             </div>
             <div className="flex items-end md:col-span-3">
-              <Button onClick={create}>
+             <Button onClick={() => void create()}>
                 <Plus className="size-4" aria-hidden="true" /> Create programme
               </Button>
             </div>
@@ -134,9 +137,8 @@ function ProgramsPage() {
                   </div>
                   <Select
                     value={p.status}
-                    onValueChange={(v) => {
-                      setProgramStatus(p.id, v as Program["status"]);
-                      toast.success(`${p.name} marked ${v}`);
+                     onValueChange={(v) => {
+                       void setProgramStatus(p.id, v as Program["status"]).then(() => toast.success(`${p.name} marked ${v}`)).catch((error) => toast.error(error instanceof Error ? error.message : "Could not update programme status."));
                     }}
                   >
                     <SelectTrigger className="w-36">
@@ -170,13 +172,11 @@ function ProgramsPage() {
                         key={s.id}
                         size="sm"
                         variant={inCohort ? "default" : "outline"}
-                        onClick={() => {
-                          const added = toggleEnrollment(p.id, s.id);
-                          toast.success(
-                            added ? `${s.name} enrolled in ${p.name}` : `${s.name} removed from ${p.name}`,
-                          );
-                          if (added) notify("student", "Programme enrolment", `${s.name} joined ${p.name}.`);
-                        }}
+                         onClick={() => {
+                           void toggleEnrollment(p.id, s.id).then((added) => toast.success(
+                             added ? `${s.name} enrolled in ${p.name}` : `${s.name} removed from ${p.name}`,
+                           )).catch((error) => toast.error(error instanceof Error ? error.message : "Could not update enrolment."));
+                         }}
                       >
                         {s.name}
                       </Button>

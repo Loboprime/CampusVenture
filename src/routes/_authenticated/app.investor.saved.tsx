@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScoreRing } from "@/components/score-ring";
-import { DEMO_INVESTORS, formatMoney, matchScore } from "@/lib/demo-data";
-import { MY_INVESTOR_ID, useVenture } from "@/lib/store";
+import { formatMoney, matchScore } from "@/lib/demo-data";
+import { useVenture } from "@/lib/store";
 
 const TITLE = "Saved Startups — CampusVenture Investor";
 const DESCRIPTION = "Your watchlist of student startups, with live match scores and quick actions.";
@@ -25,8 +25,8 @@ export const Route = createFileRoute("/_authenticated/app/investor/saved")({
 });
 
 function SavedStartups() {
-  const { startups, saved, toggleSaved, requestAccess, notify } = useVenture();
-  const me = DEMO_INVESTORS.find((i) => i.id === MY_INVESTOR_ID)!;
+  const { startups, saved, toggleSaved, requestAccess, investors, investorId } = useVenture();
+  const me = investors.find((i) => i.id === investorId);
   const list = startups.filter((s) => saved.includes(s.id));
 
   return (
@@ -50,7 +50,7 @@ function SavedStartups() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {list.map((s) => {
-              const { score } = matchScore(me, s);
+              const { score } = matchScore(me ?? { sectors: [], stages: [], ticketMin: 0, ticketMax: 0, geography: "", thesis: "" }, s);
               return (
                 <Card key={s.id}>
                   <CardHeader>
@@ -78,21 +78,14 @@ function SavedStartups() {
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => {
-                          requestAccess(s.id, MY_INVESTOR_ID);
-                          notify("student", "Data-room request", `${me.name} requested access to ${s.name}.`);
-                          toast.success("Data-room access requested");
-                        }}
+                         onClick={() => void requestAccess(s.id).then(() => toast.success("Data-room access requested")).catch((error) => toast.error(error instanceof Error ? error.message : "Request failed."))}
                       >
                         Request data room
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => {
-                          toggleSaved(s.id);
-                          toast(`${s.name} removed from watchlist`);
-                        }}
+                         onClick={() => void toggleSaved(s.id).then(() => toast(`${s.name} removed from watchlist`)).catch((error) => toast.error(error instanceof Error ? error.message : "Could not update your saved list."))}
                       >
                         <BookmarkX className="size-4" aria-hidden="true" /> Remove
                       </Button>
