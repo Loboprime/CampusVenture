@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import type { Stage } from "@/lib/demo-data";
 import { auditService, notificationService } from "./notificationService";
 import type { ReviewStatus, StartupRecord } from "./types";
@@ -85,10 +86,10 @@ export const startupService = {
   },
 
   async update(id: string, patch: Partial<StartupRecord>) {
-    const payload: Record<string, unknown> = {};
+    const payload: TablesUpdate<"startups"> = {};
     for (const [key, value] of Object.entries(patch)) {
       const column = PATCH_KEYS[key];
-      if (column) payload[column] = value;
+      if (column) Object.assign(payload, { [column]: value });
     }
     if (Object.keys(payload).length === 0) return;
     const { error } = await supabase.from("startups").update(payload).eq("id", id);
