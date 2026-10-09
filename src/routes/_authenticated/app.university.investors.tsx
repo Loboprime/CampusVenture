@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DEMO_INVESTORS, formatMoney } from "@/lib/demo-data";
+import { formatMoney } from "@/lib/demo-data";
 import { timeAgo, useVenture } from "@/lib/store";
 
 const TITLE = "Investor Interest — CampusVenture University";
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/app/university/investors")
 });
 
 function InvestorInterest() {
-  const { requests, access, meetings, messages, startups } = useVenture();
+  const { requests, access, meetings, messages, startups, investors } = useVenture();
 
   const stats = [
     { label: "Connection requests", value: requests.length, icon: HandCoins },
@@ -39,7 +39,7 @@ function InvestorInterest() {
     { label: "Meetings booked", value: meetings.length, icon: Building2 },
   ];
 
-  const rows = DEMO_INVESTORS.map((i) => ({
+  const rows = investors.map((i) => ({
     investor: i,
     requests: requests.filter((r) => r.investorId === i.id).length,
     rooms: access.filter((a) => a.investorId === i.id).length,
@@ -126,7 +126,7 @@ function InvestorInterest() {
               <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
                 <div>
                   <p className="font-medium">
-                    {DEMO_INVESTORS.find((i) => i.id === r.investorId)?.name} →{" "}
+                    {investors.find((i) => i.id === r.investorId)?.name ?? "Investor"} →{" "}
                     {startups.find((s) => s.id === r.startupId)?.name}
                   </p>
                   <p className="text-xs text-muted-foreground">

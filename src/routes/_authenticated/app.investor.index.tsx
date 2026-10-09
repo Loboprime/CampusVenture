@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/app/investor/")({
 type SortKey = "match" | "readiness" | "updated" | "funding";
 
 function InvestorDashboard() {
-  const { startups, saved, toggleSaved, addRequest, requestAccess, requests, investors, investorId, profile } = useVenture();
+  const { startups, saved, toggleSaved, addRequest, requestAccess, requests, access, investors, investorId, profile } = useVenture();
   const me = investors.find((i) => i.id === investorId);
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("all");
@@ -105,7 +105,7 @@ function InvestorDashboard() {
           />
           <MiniStat
             label="Data-room requests"
-            value={String(requests.filter((r) => r.kind === "dataroom").length)}
+            value={String(access.filter((a) => a.investorId === investorId).length)}
           />
         </div>
 

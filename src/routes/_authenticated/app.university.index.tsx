@@ -43,25 +43,25 @@ const CHART_COLORS = [
 ];
 
 function UniversityDashboard() {
-  const { startups: DEMO_STARTUPS } = useVenture();
-  const pending = DEMO_STARTUPS.filter((s) => s.status === "pending");
+  const { startups, students, programs, profile } = useVenture();
+  const pending = startups.filter((s) => s.status === "pending");
   const byStage = STAGES.map((stage) => ({
     stage,
-    count: DEMO_STARTUPS.filter((s) => s.stage === stage).length,
+    count: startups.filter((s) => s.stage === stage).length,
   }));
 
   const bySector = Object.entries(
-    DEMO_STARTUPS.reduce<Record<string, number>>((acc, s) => {
+    startups.reduce<Record<string, number>>((acc, s) => {
       acc[s.sector] = (acc[s.sector] ?? 0) + 1;
       return acc;
     }, {}),
   ).map(([name, value]) => ({ name, value }));
 
   const avgReadiness = Math.round(
-    DEMO_STARTUPS.reduce((sum, s) => sum + s.readiness, 0) / DEMO_STARTUPS.length,
+    startups.length ? startups.reduce((sum, s) => sum + s.readiness, 0) / startups.length : 0,
   );
 
-  const top = [...DEMO_STARTUPS].sort((a, b) => b.readiness - a.readiness).slice(0, 3);
+  const top = [...startups].sort((a, b) => b.readiness - a.readiness).slice(0, 3);
 
   return (
     <AppShell role="university">
@@ -69,14 +69,14 @@ function UniversityDashboard() {
         <div>
           <h1 className="text-2xl font-semibold">Ecosystem dashboard</h1>
           <p className="text-sm text-muted-foreground">
-            COEP Technological University · Innovation &amp; Incubation Cell
+            {profile?.organization || "University workspace"}
           </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="Student founders" value="142" />
-          <Stat label="Verified startups" value={String(DEMO_STARTUPS.filter((s) => s.status === "approved").length)} />
-          <Stat label="Active startups" value={String(DEMO_STARTUPS.length)} />
+          <Stat label="Student founders" value={String(students.length)} />
+          <Stat label="Verified startups" value={String(startups.filter((s) => s.status === "approved").length)} />
+          <Stat label="Active startups" value={String(startups.length)} />
           <Stat label="Avg. readiness" value={`${avgReadiness}/100`} />
         </div>
 
@@ -197,9 +197,11 @@ function UniversityDashboard() {
           </CardHeader>
           <CardContent>
             <div className="rounded-lg border border-dashed p-10 text-center">
-              <p className="text-sm text-muted-foreground">No programs published yet.</p>
-              <Button variant="outline" size="sm" className="mt-3">
+              {programs.length === 0 ? <p className="text-sm text-muted-foreground">No programs published yet.</p> : <p className="text-sm text-muted-foreground">{programs.length} programs · {programs.reduce((count, program) => count + program.enrolled.length, 0)} startups enrolled</p>}
+              <Button variant="outline" size="sm" className="mt-3" asChild>
+                <Link to="/app/university/programs">
                 Publish a program
+                </Link>
               </Button>
             </div>
           </CardContent>

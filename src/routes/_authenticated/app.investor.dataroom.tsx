@@ -16,8 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DEMO_INVESTORS } from "@/lib/demo-data";
-import { MY_INVESTOR_ID, timeAgo, useVenture } from "@/lib/store";
+import { timeAgo, useVenture } from "@/lib/store";
 
 const TITLE = "Data Rooms — CampusVenture Investor";
 const DESCRIPTION =
@@ -36,11 +35,20 @@ export const Route = createFileRoute("/_authenticated/app/investor/dataroom")({
 });
 
 function InvestorDataRooms() {
-  const { access, docs, startups, signNda, registerDownload, notify } = useVenture();
-  const me = DEMO_INVESTORS.find((i) => i.id === MY_INVESTOR_ID)!;
-  const mine = access.filter((a) => a.investorId === MY_INVESTOR_ID);
+  const { access, docs, startups, signNda, downloadDoc, investorId, profile } = useVenture();
+  const mine = investorId ? access.filter((a) => a.investorId === investorId) : [];
   const [ndaFor, setNdaFor] = useState<string | null>(null);
-  const [signature, setSignature] = useState(me.name);
+  const [signature, setSignature] = useState(profile?.fullName ?? "");
+
+  async function download(doc: (typeof docs)[number]) {
+    try {
+      const url = await downloadDoc(doc);
+      window.open(url, "_blank", "noopener,noreferrer");
+      toast.success(`${doc.name} is ready to download`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not download this document.");
+    }
+  }
 
   return (
     <AppShell role="investor">
@@ -110,11 +118,7 @@ function InvestorDataRooms() {
                         size="sm"
                         variant="outline"
                         disabled={d.confidential && !unlocked}
-                        onClick={() => {
-                          registerDownload(a.startupId, MY_INVESTOR_ID);
-                          notify("student", "Data-room activity", `${me.name} opened ${d.name}.`);
-                          toast.success(`${d.name} downloaded`);
-                        }}
+                        onClick={() => void download(d)}
                       >
                         <Download className="size-4" aria-hidden="true" />
                         {d.confidential && !unlocked ? "Locked" : "Download"}
@@ -153,10 +157,11 @@ function InvestorDataRooms() {
                   toast.error("Enter your full name to sign.");
                   return;
                 }
-                signNda(ndaFor!, MY_INVESTOR_ID, signature.trim());
-                notify("student", "NDA signed", `${signature.trim()} signed your data-room NDA.`);
-                toast.success("NDA signed — documents unlocked");
-                setNdaFor(null);
+                if (!ndaFor) return;
+                void signNda(ndaFor, signature.trim()).then(() => {
+                  toast.success("NDA signed — documents unlocked");
+                  setNdaFor(null);
+                }).catch((error) => toast.error(error instanceof Error ? error.message : "Could not record the NDA."));
               }}
             >
               Sign and unlock

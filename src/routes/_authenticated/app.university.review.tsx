@@ -79,7 +79,8 @@ function ReviewCard({ id }: { id: string }) {
   const { startups, setReview } = useVenture();
   const s = startups.find((x) => x.id === id);
   if (!s) return null;
-  const [note, setNote] = useState(s.reviewNote);
+  const startup = s;
+  const [note, setNote] = useState(startup.reviewNote);
 
   async function decide(status: ReviewStatus) {
     if (status === "rejected" && note.trim().length < 10) {
@@ -87,8 +88,8 @@ function ReviewCard({ id }: { id: string }) {
       return;
     }
     try {
-      await setReview(s.id, status, note.trim());
-      toast.success(status === "approved" ? `${s.name} approved` : `Feedback sent to ${s.name}`);
+      await setReview(startup.id, status, note.trim());
+      toast.success(status === "approved" ? `${startup.name} approved` : `Feedback sent to ${startup.name}`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save the review.");
     }
@@ -99,27 +100,27 @@ function ReviewCard({ id }: { id: string }) {
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <CardTitle className="text-base">{s.name}</CardTitle>
+            <CardTitle className="text-base">{startup.name}</CardTitle>
             <CardDescription>
-              {s.sector} · {s.stage} · raising {formatMoney(s.fundingRequired)} · {s.teamSize} people
+              {startup.sector} · {startup.stage} · raising {formatMoney(startup.fundingRequired)} · {startup.teamSize} people
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{completeness(s)}% complete</Badge>
-            <Badge>{STATUS_LABEL[s.status]}</Badge>
+            <Badge variant="secondary">{completeness(startup)}% complete</Badge>
+            <Badge>{STATUS_LABEL[startup.status]}</Badge>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
         <div className="grid gap-4 md:grid-cols-2">
-          <Field title="Problem" text={s.problem} />
-          <Field title="Solution" text={s.solution} />
+          <Field title="Problem" text={startup.problem} />
+          <Field title="Solution" text={startup.solution} />
         </div>
         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           <span>Deck: {s.deckName || "not uploaded"}</span>
-          {s.videoUrl && (
+          {startup.videoUrl && (
             <a
-              href={s.videoUrl}
+              href={startup.videoUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 hover:text-foreground"
@@ -127,9 +128,9 @@ function ReviewCard({ id }: { id: string }) {
               <ExternalLink className="size-3.5" aria-hidden="true" /> Video pitch
             </a>
           )}
-          {s.githubUrl && (
+          {startup.githubUrl && (
             <a
-              href={s.githubUrl}
+              href={startup.githubUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 hover:text-foreground"
@@ -143,7 +144,7 @@ function ReviewCard({ id }: { id: string }) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Reviewer note (required when requesting changes)"
-          aria-label={`Reviewer note for ${s.name}`}
+          aria-label={`Reviewer note for ${startup.name}`}
         />
         <div className="flex flex-wrap gap-2">
           <Button size="sm" onClick={() => void decide("approved")}>

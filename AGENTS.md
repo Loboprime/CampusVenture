@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Put browser-callable server functions in `src/lib/*.functions.ts`; keep privileged client access inside authenticated handlers and use service modules for ordinary user-scoped data, so browser bundles cannot expose privileged credentials.
