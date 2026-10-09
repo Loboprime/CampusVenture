@@ -60,6 +60,10 @@ const PATCH_KEYS: Record<string, string> = {
   deckPath: "deck_path",
   deckName: "deck_name",
   githubUrl: "github_url",
+  githubStars: "github_stars",
+  githubForks: "github_forks",
+  githubPushedAt: "github_pushed_at",
+  githubCheckedAt: "github_checked_at",
   readiness: "readiness",
   status: "status",
 };

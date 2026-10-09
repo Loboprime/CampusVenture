@@ -33,3 +33,7 @@ export function parseVideoUrl(raw: string): VideoEmbed | null {
   }
   return null;
 }
+
+export function videoEmbedUrl(raw: string) {
+  return parseVideoUrl(raw)?.embedUrl ?? null;
+}
