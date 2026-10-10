@@ -243,10 +243,7 @@ const WEIGHTS = {
 };
 
 /** Transparent weighted match between an investor and a startup. */
-export function matchScore(
-  investor: Pick<Investor, "sectors" | "stages" | "ticketMin" | "ticketMax" | "geography" | "thesis">,
-  startup: Startup,
-): MatchResult {
+export function matchScore(investor: Investor, startup: Startup): MatchResult {
   const reasons: string[] = [];
   let score = 0;
 

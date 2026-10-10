@@ -1,46 +1,61 @@
-import { useEffect, useState } from "react";
-import { LogOut, Save } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { RotateCcw, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { profileService } from "@/services/profileService";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useVenture } from "@/lib/store";
-import type { Role } from "@/services/types";
+import type { Role } from "@/lib/demo-data";
+
+const DEFAULTS: Record<Role, { name: string; email: string; org: string; bio: string }> = {
+  student: {
+    name: "Aayush Patil",
+    email: "aayush@coep.ac.in",
+    org: "COEP Technological University",
+    bio: "Final-year computer engineering student building Lumen Labs.",
+  },
+  investor: {
+    name: "Anaya Krishnan",
+    email: "anaya@northbridge.vc",
+    org: "Northbridge Seed",
+    bio: "Backing technical student founders building software for education and work.",
+  },
+  university: {
+    name: "COEP Innovation Cell",
+    email: "innovation@coep.ac.in",
+    org: "COEP Technological University",
+    bio: "Verifying student startups and running readiness programmes.",
+  },
+};
+
+const KEY = (role: Role) => `campusventure.profile.${role}`;
 
 export function SettingsView({ role }: { role: Role }) {
-  const { profile, user, refresh, signOut } = useVenture();
-  const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
-  const [organization, setOrganization] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    setFullName(profile?.fullName ?? "");
-    setOrganization(profile?.organization ?? "");
-  }, [profile]);
-
-  async function save() {
-    if (!user) return;
-    if (fullName.trim().length < 2) {
-      toast.error("Please enter your full name.");
-      return;
+  const { resetDemo } = useVenture();
+  const [profile, setProfile] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = window.localStorage.getItem(KEY(role));
+        if (raw) return { ...DEFAULTS[role], ...JSON.parse(raw) };
+      } catch {
+        /* ignore */
+      }
     }
-    setSaving(true);
+    return DEFAULTS[role];
+  });
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [weeklyDigest, setWeeklyDigest] = useState(role === "university");
+
+  function save() {
     try {
-      await profileService.updateProfile(user.id, {
-        fullName: fullName.trim(),
-        organization: organization.trim(),
-      });
-      await refresh();
-      toast.success("Profile saved");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not save your profile.");
-    } finally {
-      setSaving(false);
+      window.localStorage.setItem(KEY(role), JSON.stringify(profile));
+    } catch {
+      /* ignore */
     }
+    toast.success("Profile saved");
   }
 
   return (
@@ -48,54 +63,91 @@ export function SettingsView({ role }: { role: Role }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Profile</CardTitle>
-          <CardDescription>Shown to the people you work with on CampusVenture.</CardDescription>
+          <CardDescription>Shown on your public CampusVenture profile.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="st-name">Name</Label>
-            <Input id="st-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            <Input
+              id="st-name"
+              value={profile.name}
+              onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="st-email">Email</Label>
-            <Input id="st-email" value={user?.email ?? ""} readOnly disabled />
+            <Input
+              id="st-email"
+              type="email"
+              value={profile.email}
+              onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="st-org">Organisation</Label>
             <Input
               id="st-org"
-              value={organization}
-              onChange={(e) => setOrganization(e.target.value)}
+              value={profile.org}
+              onChange={(e) => setProfile({ ...profile, org: e.target.value })}
             />
           </div>
           <div className="space-y-1.5">
-            <Label>Account type</Label>
-            <Input value={role} readOnly disabled className="capitalize" />
+            <Label htmlFor="st-bio">Bio</Label>
+            <Textarea
+              id="st-bio"
+              rows={3}
+              value={profile.bio}
+              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+            />
           </div>
-          <Button onClick={() => void save()} disabled={saving}>
+          <Button onClick={save}>
             <Save className="size-4" aria-hidden="true" /> Save changes
           </Button>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Account</CardTitle>
-          <CardDescription>
-            Notifications appear in the bell in the header. Email delivery is not connected yet.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="outline"
-            onClick={async () => {
-              await signOut();
-              navigate({ to: "/auth", replace: true });
-            }}
-          >
-            <LogOut className="size-4" aria-hidden="true" /> Log out
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Notifications</CardTitle>
+            <CardDescription>Control what reaches your inbox.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <Label htmlFor="st-alerts" className="font-normal">
+                Email alerts for new activity
+              </Label>
+              <Switch id="st-alerts" checked={emailAlerts} onCheckedChange={setEmailAlerts} />
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <Label htmlFor="st-digest" className="font-normal">
+                Weekly ecosystem digest
+              </Label>
+              <Switch id="st-digest" checked={weeklyDigest} onCheckedChange={setWeeklyDigest} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Workspace data</CardTitle>
+            <CardDescription>
+              Reset every startup, message, meeting and data-room record back to the seeded set.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={() => {
+                resetDemo();
+                toast.success("Workspace reset");
+              }}
+            >
+              <RotateCcw className="size-4" aria-hidden="true" /> Reset workspace
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -92,7 +92,7 @@ function Landing() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Button asChild size="sm">
-              <Link to="/auth">Sign in</Link>
+              <Link to="/app/student">Open demo</Link>
             </Button>
           </div>
         </div>
@@ -111,19 +111,19 @@ function Landing() {
           <p className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground">{DESCRIPTION}</p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link to="/auth">
+              <Link to="/app/student">
                 <GraduationCap className="size-4" aria-hidden="true" />
                 I&apos;m a Student Founder
               </Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
-              <Link to="/auth">
+              <Link to="/app/investor">
                 <LineChart className="size-4" aria-hidden="true" />
                 I&apos;m an Investor
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/auth">
+              <Link to="/app/university">
                 <Users className="size-4" aria-hidden="true" />
                 I&apos;m a University
               </Link>
@@ -217,11 +217,11 @@ function Landing() {
         <div className="rounded-2xl border bg-card p-10 text-center shadow-elevated">
           <h2 className="text-2xl font-semibold">See the full journey end to end</h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            Sign in to access the founder, investor or university workspace.
+            Explore the student, investor and university experiences with seeded demo data.
           </p>
           <Button asChild size="lg" className="mt-6">
-            <Link to="/auth">
-              Sign in to CampusVenture
+            <Link to="/app/student">
+              Open the demo
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </Button>

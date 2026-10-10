@@ -13,72 +13,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatWhen, useVenture } from "@/lib/store";
+import { DEMO_INVESTORS } from "@/lib/demo-data";
+import { MY_INVESTOR_ID, MY_STARTUP_ID, formatWhen, useVenture } from "@/lib/store";
 
 export function MeetingsView({ as }: { as: "student" | "investor" }) {
-  const {
-    meetings,
-    startups,
-    investors,
-    requestMeeting,
-    setMeetingStatus,
-    startupId: myStartupId,
-    investorId: myInvestorId,
-  } = useVenture();
-
+  const { meetings, startups, requestMeeting, setMeetingStatus, notify } = useVenture();
   const mine = meetings.filter((m) =>
-    as === "student" ? m.startupId === myStartupId : m.investorId === myInvestorId,
+    as === "student" ? m.startupId === MY_STARTUP_ID : m.investorId === MY_INVESTOR_ID,
   );
-  const options =
-    as === "student"
-      ? investors.map((i) => ({ id: i.id, label: `${i.name} — ${i.organization}` }))
-      : startups.filter((s) => s.status === "approved").map((s) => ({ id: s.id, label: s.name }));
 
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState(
+    as === "student" ? DEMO_INVESTORS[0]!.id : startups[0]?.id ?? MY_STARTUP_ID,
+  );
   const [title, setTitle] = useState("Intro call");
   const [when, setWhen] = useState("");
   const [minutes, setMinutes] = useState("30");
-  const [busy, setBusy] = useState(false);
 
-  async function schedule() {
-    const other = target || options[0]?.id;
-    if (!other) {
-      toast.error("Nobody to schedule with yet.");
-      return;
-    }
+  function schedule() {
     if (!when) {
       toast.error("Pick a date and time.");
       return;
     }
-    const startupId = as === "student" ? myStartupId : other;
-    const investorId = as === "student" ? other : myInvestorId;
-    if (!startupId || !investorId) {
-      toast.error("Your account is missing a profile for this action.");
-      return;
-    }
-    setBusy(true);
-    try {
-      await requestMeeting({
-        startupId,
-        investorId,
-        title: title.trim() || "Meeting",
-        at: new Date(when).toISOString(),
-        minutes: Number(minutes),
-        requestedBy: as,
-      });
-      toast.success("Meeting request sent");
-      setWhen("");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not send the request.");
-    } finally {
-      setBusy(false);
-    }
+    requestMeeting({
+      startupId: as === "student" ? MY_STARTUP_ID : target,
+      investorId: as === "student" ? target : MY_INVESTOR_ID,
+      title: title.trim() || "Meeting",
+      at: new Date(when).toISOString(),
+      minutes: Number(minutes),
+      requestedBy: as,
+    });
+    notify(as === "student" ? "investor" : "student", "Meeting request", `${title} — ${formatWhen(new Date(when).toISOString())}`);
+    toast.success("Meeting request sent");
+    setWhen("");
   }
 
   const label = (sId: string, iId: string) =>
     as === "student"
-      ? (investors.find((i) => i.id === iId)?.name ?? "Investor")
-      : (startups.find((s) => s.id === sId)?.name ?? "Startup");
+      ? DEMO_INVESTORS.find((i) => i.id === iId)?.name ?? "Investor"
+      : startups.find((s) => s.id === sId)?.name ?? "Startup";
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
@@ -117,8 +89,8 @@ export function MeetingsView({ as }: { as: "student" | "investor" }) {
                     <>
                       <Button
                         size="sm"
-                        onClick={async () => {
-                          await setMeetingStatus(m.id, "confirmed");
+                        onClick={() => {
+                          setMeetingStatus(m.id, "confirmed");
                           toast.success("Meeting confirmed");
                         }}
                       >
@@ -127,8 +99,8 @@ export function MeetingsView({ as }: { as: "student" | "investor" }) {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={async () => {
-                          await setMeetingStatus(m.id, "declined");
+                        onClick={() => {
+                          setMeetingStatus(m.id, "declined");
                           toast("Meeting declined");
                         }}
                       >
@@ -150,16 +122,22 @@ export function MeetingsView({ as }: { as: "student" | "investor" }) {
         <CardContent className="space-y-3">
           <div className="space-y-1.5">
             <Label>{as === "student" ? "Investor" : "Startup"}</Label>
-            <Select value={target || options[0]?.id || ""} onValueChange={setTarget}>
+            <Select value={target} onValueChange={setTarget}>
               <SelectTrigger>
-                <SelectValue placeholder="Choose" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {options.map((o) => (
-                  <SelectItem key={o.id} value={o.id}>
-                    {o.label}
-                  </SelectItem>
-                ))}
+                {as === "student"
+                  ? DEMO_INVESTORS.map((i) => (
+                      <SelectItem key={i.id} value={i.id}>
+                        {i.name} — {i.organization}
+                      </SelectItem>
+                    ))
+                  : startups.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
               </SelectContent>
             </Select>
           </div>
@@ -187,7 +165,7 @@ export function MeetingsView({ as }: { as: "student" | "investor" }) {
               onChange={(e) => setMinutes(e.target.value)}
             />
           </div>
-          <Button className="w-full" onClick={() => void schedule()} disabled={busy}>
+          <Button className="w-full" onClick={schedule}>
             <CalendarClock className="size-4" aria-hidden="true" /> Send request
           </Button>
         </CardContent>
